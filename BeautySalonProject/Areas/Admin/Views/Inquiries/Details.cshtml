@@ -1,0 +1,70 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.InquiryDetailsVm
+@{
+    ViewData["Title"] = "Запитване #" + Model.InquiryId;
+}
+
+<div class="container my-5">
+    <div class="sh-page-hero text-center mb-4">
+        <h1 class="sh-hero-title">Запитване #@Model.InquiryId</h1>
+        <div class="sh-hero-desc">@Model.ServiceText</div>
+    </div>
+
+    <div class="sh-content-card mb-3">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="text-muted small">Клиент</div>
+                <div class="fw-semibold">@Model.FullName</div>
+                <div class="text-muted small">@Model.Phone</div>
+                <div class="text-muted small">@Model.Email</div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="text-muted small">Детайли</div>
+                <div><b>Предпочитана дата/час:</b> @(Model.PreferredDateTime?.ToString("dd.MM.yyyy HH:mm") ?? "—")</div>
+                <div><b>Създадено:</b> @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+                <div class="mt-2">
+                    <span class="badge @Badge(Model.Status)">@Text(Model.Status)</span>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="text-muted small">Съобщение</div>
+                <div class="sh-note-box">@(!string.IsNullOrWhiteSpace(Model.Message) ? Model.Message : "—")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sh-content-card">
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+
+            <form asp-area="Admin" asp-controller="Inquiries" asp-action="SetStatus" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.InquiryId" />
+                <input type="hidden" name="status" value="1" />
+                <button class="btn sh-btn-book" type="submit">Одобри</button>
+            </form>
+
+            <form asp-area="Admin" asp-controller="Inquiries" asp-action="SetStatus" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.InquiryId" />
+                <input type="hidden" name="status" value="2" />
+                <button class="btn btn-outline-danger" type="submit">Откажи</button>
+            </form>
+
+            <a class="btn sh-btn-secondary" asp-area="Admin" asp-controller="Inquiries" asp-action="Index">
+                ⟵ Назад
+            </a>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string Text(byte s) => s switch { 0 => "Ново", 1 => "Одобрено", 2 => "Отказано", _ => "—" };
+    string Badge(byte s) => s switch
+    {
+        0 => "sh-badge sh-badge-warn",
+        1 => "sh-badge sh-badge-ok",
+        2 => "sh-badge sh-badge-bad",
+        _ => "sh-badge"
+    };
+}

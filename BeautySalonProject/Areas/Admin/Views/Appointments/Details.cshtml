@@ -1,0 +1,170 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.Appointments.AdminAppointmentDetailsVm
+@{
+    ViewData["Title"] = "Детайли за записване";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="sh-admin-page">
+
+    <div class="sh-admin-head mb-4">
+        <h1 class="sh-admin-title">Записване #@Model.AppointmentId</h1>
+        <div class="sh-admin-subtitle">Детайли и управление на статуса</div>
+    </div>
+
+    @if (TempData["Ok"] != null)
+    {
+            <div class="alert alert-success">@TempData["Ok"]</div>
+    }
+    @if (TempData["Err"] != null)
+    {
+            <div class="alert alert-danger">@TempData["Err"]</div>
+    }
+
+    <div class="row g-3">
+       <div class="col-lg-7">
+            <div class="sh-admin-card">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <div>
+                        <div class="text-muted small">Услуга</div>
+                        <div class="fw-semibold">@Model.ServiceName</div>
+                        <div class="text-muted">@Model.VariantName</div>
+                    </div>
+
+                    <div class="text-end">
+                        <div class="text-muted small">Статус</div>
+                        <span class="badge @GetBadge(Model.Status)">@GetText(Model.Status)</span>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="text-muted small">Дата</div>
+                        <div class="fw-semibold">@Model.StartAt.ToString("dd.MM.yyyy")</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="text-muted small">Час</div>
+                        <div class="fw-semibold">@Model.StartAt.ToString("HH:mm") – @Model.EndAt.ToString("HH:mm")</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="text-muted small">Служител</div>
+                        <div class="fw-semibold">@Model.EmployeeName</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="text-muted small">Клиент</div>
+                        <div class="fw-semibold">@Model.ClientName</div>
+                        <div class="text-muted small">@((Model.IsGuest) ? "Гост" : "Профил")</div>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.ClientPhone))
+                        {
+                                <div class="text-muted small">@Model.ClientPhone</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.ClientEmail))
+                        {
+                                <div class="text-muted small">@Model.ClientEmail</div>
+                        }
+                    </div>
+
+                    <div class="col-12">
+                        <div class="text-muted small">Бележки</div>
+                        <div class="fw-semibold">@(!string.IsNullOrWhiteSpace(Model.Notes) ? Model.Notes : "—")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+
+            <div class="sh-admin-card mb-3">
+                <div class="fw-semibold mb-2">Действия</div>
+                <div class="text-muted small mb-3">Промени статуса на записването</div>
+
+                <div class="d-grid gap-2">
+
+                    <form asp-area="Admin" asp-controller="Appointments" asp-action="SetStatus" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.AppointmentId" />
+                        <input type="hidden" name="status" value="1" />
+                        <input type="hidden" name="date" value="@Model.StartAt.ToString("yyyy-MM-dd")" />
+                        <button class="btn btn-success" type="submit" @(Model.Status != 0 ? "disabled" : "")>
+                            ✅ Потвърди
+                        </button>
+                    </form>
+
+                    <form asp-area="Admin" asp-controller="Appointments" asp-action="SetStatus" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.AppointmentId" />
+                        <input type="hidden" name="status" value="2" />
+                        <input type="hidden" name="date" value="@Model.StartAt.ToString("yyyy-MM-dd")" />
+                        <button class="btn btn-primary" type="submit" @(Model.Status != 1 ? "disabled" : "")>
+                            ✅ Приключи
+                        </button>
+                    </form>
+
+                    <form asp-area="Admin" asp-controller="Appointments" asp-action="SetStatus" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.AppointmentId" />
+                        <input type="hidden" name="status" value="3" />
+                        <input type="hidden" name="date" value="@Model.StartAt.ToString("yyyy-MM-dd")" />
+                        <button class="btn btn-danger" type="submit" @(Model.Status == 2 ? "disabled" : "")>
+                            ❌ Откажи
+                        </button>
+                    </form>
+
+                    <a class="btn btn-outline-secondary mt-2"
+                       asp-area="Admin" asp-controller="Appointments" asp-action="Index"
+                       asp-route-date="@Model.StartAt.ToString("yyyy-MM-dd")">
+                        ⟵ Назад към списъка
+                    </a>
+                </div>
+            </div>
+
+            <!-- Reassign -->
+            <div class="sh-admin-card">
+                <div class="fw-semibold mb-2">Преразпределяне</div>
+                <div class="text-muted small mb-3">Избери друг служител</div>
+
+                <form asp-area="Admin" asp-controller="Appointments" asp-action="Reassign" method="post" class="d-flex gap-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.AppointmentId" />
+
+                    <select class="form-select" name="employeeId">
+                        @foreach (var e in Model.Employees)
+                        {
+                                <option value="@e.Id" selected="@(e.Id == Model.EmployeeId)">
+                                @e.Name
+                                </option>
+                        }
+                    </select>
+
+                    <button class="btn sh-btn-book" type="submit">Запази</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetText(byte s) => s switch
+    {
+        0 => "Чака",
+        1 => "Потвърден",
+        2 => "Приключен",
+        3 => "Отказан",
+        _ => "—"
+    };
+
+    string GetBadge(byte s) => s switch
+    {
+        0 => "text-bg-warning",
+        1 => "text-bg-success",
+        2 => "text-bg-primary",
+        3 => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+}

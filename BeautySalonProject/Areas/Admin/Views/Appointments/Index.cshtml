@@ -1,0 +1,126 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.Appointments.AdminAppointmentsIndexVm
+@{
+    ViewData["Title"] = "Записвания";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="sh-admin-page">
+    <div class="sh-admin-head mb-4">
+        <h1 class="sh-admin-title">Записвания</h1>
+        <div class="sh-admin-subtitle">Дневен график + управление на статус</div>
+    </div>
+
+    @if (TempData["Ok"] != null)
+    {
+            <div class="alert alert-success">@TempData["Ok"]</div>
+    }
+
+    <div class="sh-admin-card mb-3">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Ден</label>
+                <input type="date" class="form-control"
+                       name="date"
+                       value="@Model.Date.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Статус</label>
+                <select class="form-select" name="status">
+                    <option value="">Всички</option>
+                    <option value="0" selected="@(Model.StatusFilter == 0)">Чака</option>
+                    <option value="1" selected="@(Model.StatusFilter == 1)">Потвърден</option>
+                    <option value="2" selected="@(Model.StatusFilter == 2)">Приключен</option>
+                    <option value="3" selected="@(Model.StatusFilter == 3)">Отказан</option>
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex gap-2">
+                <button class="btn sh-btn-book" type="submit">Филтрирай</button>
+                <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Appointments" asp-action="Index">
+                    Днес
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="sh-admin-card">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr class="text-muted small">
+                        <th>Час</th>
+                        <th>Услуга</th>
+                        <th>Служител</th>
+                        <th>Клиент</th>
+                        <th>Статус</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model.Rows)
+                    {
+                            <tr>
+                                <td class="fw-semibold">@a.StartAt.ToString("HH:mm") – @a.EndAt.ToString("HH:mm")</td>
+                                <td>
+                                    <div>@a.ServiceName</div>
+                                    <div class="text-muted small">@a.VariantName</div>
+                                </td>
+                                <td>@a.EmployeeName</td>
+                                <td class="text-muted small">@a.ClientUserId</td>
+                                <td>
+                                    <span class="badge @Badge(a.Status)">@Text(a.Status)</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-2">
+                                        <a class="btn btn-sm btn-outline-secondary"
+                                           asp-area="Admin" asp-controller="Appointments" asp-action="Details"
+                                           asp-route-id="@a.AppointmentId">Детайли</a>
+
+                                        <form asp-area="Admin" asp-controller="Appointments" asp-action="SetStatus" method="post">
+                                        @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@a.AppointmentId" />
+                                            <input type="hidden" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" />
+                                            <input type="hidden" name="status" value="3" />
+                                            <button class="btn btn-sm btn-outline-danger" type="submit">
+                                                Откажи
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                    }
+
+                    @if (!Model.Rows.Any())
+                    {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    Няма записвания за този ден.
+                                </td>
+                            </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string Text(byte s) => s switch
+    {
+        0 => "Чака",
+        1 => "Потвърден",
+        2 => "Приключен",
+        3 => "Отказан",
+        _ => "—"
+    };
+
+    string Badge(byte s) => s switch
+    {
+        0 => "text-bg-warning",
+        1 => "text-bg-success",
+        2 => "text-bg-primary",
+        3 => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+}

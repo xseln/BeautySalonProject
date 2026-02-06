@@ -1,0 +1,109 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.Inquiries.InquiryIndexVm
+
+@{
+    ViewData["Title"] = "Запитвания";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="sh-admin-page">
+    <div class="sh-admin-head mb-4">
+        <h1 class="sh-admin-title">Запитвания</h1>
+        <div class="sh-admin-subtitle">Преглед и обработка на запитванията от сайта</div>
+    </div>
+
+    <div class="sh-admin-card">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Клиент</th>
+                        <th>Услуга</th>
+                        <th>Предпочитан час</th>
+                        <th>Статус</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@item.FullName</div>
+                                <div class="text-muted small">@item.Phone</div>
+                            </td>
+
+                            <td>@item.ServiceText</td>
+
+                            <td class="text-muted">
+                                @(item.PreferredDateTime.HasValue
+                                        ? item.PreferredDateTime.Value.ToString("dd.MM.yyyy HH:mm")
+                                        : "—")
+                            </td>
+
+                            <td>
+                                @switch (item.Status)
+                                {
+                                    case BeautySalonProject.Models.Enums.InquiryStatus.New:
+                                                <span class="badge rounded-pill text-bg-warning">Ново</span>
+                                        break;
+                                    case BeautySalonProject.Models.Enums.InquiryStatus.Approved:
+                                                <span class="badge rounded-pill text-bg-success">Одобрено</span>
+                                        break;
+                                    case BeautySalonProject.Models.Enums.InquiryStatus.Rejected:
+                                                <span class="badge rounded-pill text-bg-danger">Отказано</span>
+                                        break;
+                                    case BeautySalonProject.Models.Enums.InquiryStatus.Converted:
+                                                <span class="badge rounded-pill text-bg-primary">Записано</span>
+                                        break;
+                                }
+                            </td>
+
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+
+                                    <form asp-area="Admin" asp-controller="Inquiries" asp-action="Approve" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.InquiryId" />
+                                        <button class="btn btn-sm btn-outline-success" type="submit"
+                                        @(item.Status != BeautySalonProject.Models.Enums.InquiryStatus.New ? "disabled" : "")>
+                                            Одобри
+                                        </button>
+                                    </form>
+
+                                    <form asp-area="Admin" asp-controller="Inquiries" asp-action="Reject" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.InquiryId" />
+                                        <button class="btn btn-sm btn-outline-danger" type="submit"
+                                        @(item.Status != BeautySalonProject.Models.Enums.InquiryStatus.New ? "disabled" : "")>
+                                            Откажи
+                                         </button>
+                                    </form>
+
+                                        <form asp-area="Admin" asp-controller="Inquiries" asp-action="ConvertToAppointment" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="inquiryId" value="@item.InquiryId" />
+                                       <button class="btn btn-sm btn-outline-primary" type="submit"
+                                        @(item.Status != BeautySalonProject.Models.Enums.InquiryStatus.Approved ? "disabled" : "")>
+                                            Запиши час
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                    @if (!Model.Items.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                Няма запитвания.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

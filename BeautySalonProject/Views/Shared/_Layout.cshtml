@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SH Beauty Salon</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BeautySalonProject.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+    <header class="sh-topbar">
+    <nav class="navbar navbar-expand">
+        <div class="container-fluid position-relative">
+
+            <!-- Left: Burger + Logo -->
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn sh-burger"
+                        type="button"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#mainMenu"
+                        aria-controls="mainMenu"
+                        aria-label="Menu">
+                    ☰
+                </button>
+
+                <a class="d-flex align-items-center gap-2 text-decoration-none"
+                   asp-controller="Home" asp-action="Index">
+                    <img class="sh-logo" src="~/images/logo.png" alt="Logo" />
+                </a>
+            </div>
+
+           <!-- CSalon Name  -->
+<div class="position-absolute start-50 translate-middle-x text-center">
+    <div class="sh-brand-wrapper">
+        <a class="sh-brand d-block" asp-controller="Home" asp-action="Index">
+            SH Beauty Studio
+        </a>
+
+        <div class="sh-slogan-wrap">
+            <span class="line"></span>
+            <span class="sh-slogan">Chic &amp; Unique</span>
+            <span class="line"></span>
+        </div>
+    </div>
+</div>
+
+
+            <!-- Right: Register / Login -->
+            <div class="ms-auto sh-auth">
+                <partial name="_LoginPartial" />
+            </div>
+        </div>
+    </nav>
+
+    <!-- Offcanvas menu -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mainMenu" aria-labelledby="mainMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mainMenuLabel">Меню</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+
+      <div class="offcanvas-body sh-menu">
+
+    <ul class="nav flex-column gap-2 flex-grow-1">
+
+        <li class="nav-item">
+            <a class="nav-link sh-menu-link" asp-controller="Home" asp-action="About">За нас</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link sh-menu-link" asp-controller="Services" asp-action="Index">Нашите услуги</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link sh-menu-link" asp-controller="Home" asp-action="Contacts">Контакти</a>
+        </li>
+                    @if (User.IsInRole("Admin"))
+                    {
+        <li class="nav-item">
+            <a class="nav-link sh-menu-link"
+               asp-area="Admin"
+               asp-controller="Dashboard"
+               asp-action="Index">
+                Админ панел
+            </a>
+        </li>
+                    }
+
+    </ul>
+
+    <div class="mt-auto pt-3 border-top">
+        <div class="d-grid">
+                        @if (User.Identity?.IsAuthenticated ?? false)
+                        {
+                    <a class="btn sh-btn-book" asp-area="Client" asp-controller="Appointments" asp-action="Create">
+                        Запази своя час
+                    </a>
+                        }
+                        else
+                        {
+                    <a class="btn sh-btn-book" asp-controller="Inquiries" asp-action="Create">
+                        Запази своя час
+                    </a>
+                        }
+        </div>
+    </div>
+</div>
+    </div>
+</header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+   <footer class="sh-footer mt-5">
+    <div class="container py-4">
+        <div class="row g-4 align-items-start">
+
+            <div class="col-md-5">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <img src="~/images/logo.png" alt="Logo" class="sh-footer-logo" />
+                    <div>
+                        <div class="sh-footer-title">SH Beauty Salon</div>
+                        <div class="sh-footer-subtitle">Chic &amp; Unique</div>
+                    </div>
+                </div>
+
+                <div class="sh-footer-text">
+                    Добре дошли в нашето уютно място за красота и релакс.
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="sh-footer-heading">Контакти</div>
+                <div class="sh-footer-text">
+                    <div><i class="fa-solid fa-location-dot me-2"></i>гр. София, ул. „Граф Игнатиев“ №27</div>
+                    <div class="mt-2"><i class="fa-solid fa-phone me-2"></i>088 214 9331</div>
+                    <div class="mt-2"><i class="fa-solid fa-envelope me-2"></i>shbeautystudioo@gmail.com</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="sh-footer-heading">Социални мрежи</div>
+
+                <div class="d-flex flex-column gap-2">
+                    <a class="sh-social" href="#" target="_blank">
+                        <i class="fa-brands fa-facebook"></i>
+                        <span><strong>Facebook:</strong> SH Beauty Studio</span>
+                    </a>
+
+                    <a class="sh-social" href="#" target="_blank">
+                        <i class="fa-brands fa-instagram"></i>
+                        <span><strong>Instagram:</strong> shbeautystudio</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sh-footer-bottom mt-4 pt-3">
+            
+            <span class="sh-footer-dot"></span>
+            
+        </div>
+    </div>
+</footer>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+    
+
+</body>
+</html>

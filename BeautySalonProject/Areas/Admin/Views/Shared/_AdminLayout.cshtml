@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Admin | SH Beauty</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<body class="bg-light">
+
+<div class="d-flex" style="min-height:100vh">
+
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            SH Beauty<br />
+            <small>Admin Panel</small>
+        </div>
+
+      <nav class="admin-nav">
+    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+        📩
+    </a>
+    <a asp-area="Admin" asp-controller="Inquiries" asp-action="Index">
+        📩Запитвания
+    </a>
+    <a asp-area="Admin" asp-controller="Appointments" asp-action="Index">
+        📅 Записвания
+    </a>
+
+    <a asp-area="Admin" asp-controller="Services" asp-action="Index">
+        💇‍♀️ Услуги и цени
+    </a>
+
+    <a asp-area="Admin" asp-controller="Employees" asp-action="Index">
+        👩‍💼 Служители
+    </a>
+
+    <a asp-area="Admin" asp-controller="Reports" asp-action="Index">
+        📈 Статистики
+    </a>
+
+    <hr />
+
+    <a asp-controller="Home" asp-action="Index">
+        ⬅️ Към сайта
+    </a>
+</nav>
+
+    </aside>
+    <main class="admin-content">
+        <div class="container-fluid py-4">
+                @RenderBody()
+        </div>
+    </main>
+
+</div>
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

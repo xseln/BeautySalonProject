@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "За нас";
+}
+
+<div class="container my-4">
+    <div class="sh-page-hero mb-4 text-center">
+        <div class="sh-hero-kicker">SH Beauty Studio</div>
+        <h1 class="sh-hero-title">За нас</h1>
+        <div class="sh-hero-subtitle">Chic &amp; Unique</div>
+
+        <div class="sh-hero-desc mt-3">
+            SH Beauty Studio е място, създадено за уют, релакс и професионална грижа.
+            Работим с внимание към детайла и индивидуален подход към всеки клиент.
+        </div>
+    </div>
+
+    <div class="sh-content-card">
+        <h3 class="sh-section-title">Какво ще откриеш при нас</h3>
+        <ul class="sh-bullets">
+            <li>Фризьорски услуги – подстригване, боядисване, терапии</li>
+            <li>Маникюр и педикюр – гел лак, поддръжка, декорации</li>
+            <li>Козметика – почистване, пилинг, процедури</li>
+            <li>Вежди и мигли – оформяне, ламиниране, микроблейдинг</li>
+            <li>Лазерна епилация – по зони</li>
+            <li>Грим – дневен и официален</li>
+        </ul>
+
+        <div class="text-center mt-4">
+            @if (User.Identity?.IsAuthenticated ?? false)
+            {
+                    <a class="btn sh-btn-book" asp-area="Client" asp-controller="Appointments" asp-action="Create">Запази своя час</a>
+            }
+            else
+            {
+                    <a class="btn sh-btn-book" asp-controller="Inquiries" asp-action="Create">Запази своя час</a>
+            }
+        </div>
+    </div>
+</div>

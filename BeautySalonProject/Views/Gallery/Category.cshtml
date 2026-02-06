@@ -1,0 +1,151 @@
+﻿@model BeautySalonProject.ViewModels.GalleryVm
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container my-4">
+    <div class="sh-page-hero mb-4">
+    <div class="text-center">
+
+        <h1 class="sh-hero-title">@Model.Title</h1>
+
+        <div class="sh-hero-subtitle">
+                @Model.Subtitle
+        </div>
+
+        <div class="sh-hero-desc">
+                @Model.Description
+        </div>
+
+        <div class="sh-hero-actions mt-3">
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <a class="btn sh-btn-book" asp-area="Client" asp-controller="Appointments" asp-action="Create">
+                        Запази своя час
+                    </a>
+                }
+                else
+                {
+                    <a class="btn sh-btn-book" asp-controller="Inquiries" asp-action="Create">
+                        Запази своя час
+                    </a>
+                }
+        </div>
+    </div>
+</div>
+
+
+    @if (Model.Images.Count == 0)
+    {
+            <div class="text-center text-muted">
+                Няма добавени снимки в галерията все още.
+            </div>
+    }
+    else
+    {
+            <div class="row g-3">
+            @for (int i = 0; i < Model.Images.Count; i++)
+            {
+                var img = Model.Images[i];
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <a href="javascript:void(0)"
+                               class="text-decoration-none"
+                               data-bs-toggle="modal"
+                               data-bs-target="#galleryModal"
+                               data-index="@i">
+                                <div class="sh-thumb">
+                                    <img src="~/gallery/@Model.Folder/@img" alt="@Model.Title @i" />
+                                </div>
+                            </a>
+                        </div>
+            }
+            </div>
+    }
+
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content sh-modal">
+            <div class="modal-header border-0">
+                <div class="sh-modal-title">
+                    <span class="fw-bold">@Model.Title</span>
+                    <span class="text-muted ms-2" id="slideCounter"></span>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-0">
+                <div id="galleryCarousel" class="carousel slide" data-bs-ride="false" data-bs-touch="true">
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < Model.Images.Count; i++)
+                        {
+                            var img = Model.Images[i];
+                                <div class="carousel-item @(i == 0 ? "active" : "")">
+                                    <div class="sh-slide">
+                                        <img src="~/gallery/@Model.Folder/@img" alt="Slide @i" />
+                                    </div>
+                                </div>
+                        }
+                    </div>
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#galleryCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+
+                    <button class="carousel-control-next" type="button" data-bs-target="#galleryCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 justify-content-center">
+                <small class="text-muted">Можеш да ползваш стрелките на клавиатурата ← →</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <script>
+            (function () {
+                const modal = document.getElementById('galleryModal');
+                const carouselEl = document.getElementById('galleryCarousel');
+                const counterEl = document.getElementById('slideCounter');
+
+                if (!modal || !carouselEl) return;
+
+                const carousel = bootstrap.Carousel.getOrCreateInstance(carouselEl, { interval: false, ride: false });
+
+                function setCounter() {
+                    const items = carouselEl.querySelectorAll('.carousel-item');
+                    const active = carouselEl.querySelector('.carousel-item.active');
+                    const index = Array.from(items).indexOf(active);
+                    counterEl.textContent = `(${index + 1}/${items.length})`;
+                }
+
+                document.addEventListener('click', function (e) {
+                    const a = e.target.closest('a[data-index]');
+                    if (!a) return;
+
+                    const idx = parseInt(a.getAttribute('data-index'));
+                    if (!Number.isNaN(idx)) {
+                        carousel.to(idx);
+                  
+                        setTimeout(setCounter, 50);
+                    }
+                });
+
+                carouselEl.addEventListener('slid.bs.carousel', setCounter);
+
+                modal.addEventListener('shown.bs.modal', setCounter);
+
+                document.addEventListener('keydown', function (e) {
+                    if (!modal.classList.contains('show')) return;
+
+                    if (e.key === 'ArrowLeft') carousel.prev();
+                    if (e.key === 'ArrowRight') carousel.next();
+                });
+            })();
+        </script>
+}

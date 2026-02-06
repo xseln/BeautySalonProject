@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "Нашите услуги";
+}
+
+<div class="container my-5">
+
+   <div class="sh-page-hero text-center mb-4">
+    <h1 class="sh-hero-title">Нашите услуги</h1>
+    <div class="sh-hero-desc">
+        Изберете категория, за да видите цените и услугите
+    </div>
+    <br/>
+    <div class="row g-4 justify-content-center sh-services-icons">
+       <br />
+
+        <div class="col-6 col-md-3 d-flex justify-content-center">
+            <a asp-controller="Services" asp-action="Category" asp-route-id="1" class="sh-service-btn">
+                <img src="~/images/icons/icon1.jpg" alt="Фризьор и грим" />
+                <span>Фризьор &amp; Грим</span>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-3 d-flex justify-content-center">
+            <a asp-controller="Services" asp-action="Category" asp-route-id="2" class="sh-service-btn">
+                <img src="~/images/icons/icon2.jpg" alt="Маникюр и педикюр" />
+                <span>Маникюр &amp; Педикюр</span>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-3 d-flex justify-content-center">
+            <a asp-controller="Services" asp-action="Category" asp-route-id="5" class="sh-service-btn">
+                <img src="~/images/icons/icon3.jpg" alt="Лазерна епилация" />
+                <span>Лазерна епилация</span>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-3 d-flex justify-content-center">
+            <a asp-controller="Services" asp-action="Category" asp-route-id="4" class="sh-service-btn">
+                <img src="~/images/icons/icon4.jpg" alt="" />
+                <span>Козметични процедури</span>
+            </a>
+        </div>
+
+         <div class="col-6 col-md-3 d-flex justify-content-center">
+            <a asp-controller="Services" asp-action="Category" asp-route-id="6" class="sh-service-btn">
+                <img src="~/images/icons/icon5.jpg" alt="Вежди и Мигли" />
+                <span>Вежди &amp; Мигли</span>
+            </a>
+        </div>
+        </div>
+        </div>
+
+    </div>
+</div>
