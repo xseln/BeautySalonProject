@@ -130,44 +130,45 @@ namespace BeautySalonProject.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Details), new { id = inquiryId });
             }
 
-            var employeeId = await _db.Employees
-                .Where(e => e.IsActive)
-                .Select(e => e.EmployeeId)
-                .FirstOrDefaultAsync();
+            var variant = await _db.ServiceVariants
+                .Include(v => v.Service)
+                .FirstOrDefaultAsync(v => v.VariantId == inquiry.VariantId.Value);
 
-            if (employeeId == 0)
-            {
-                TempData["Err"] = "Няма активен служител, към който да се запише часът.";
-                return RedirectToAction(nameof(Details), new { id = inquiryId });
-            }
+            if (variant == null) return NotFound("Няма такъв ServiceVariant.");
+            if (variant.Service == null) return NotFound("Variant няма Service.");
 
-            var duration = await _db.ServiceVariants
-                .Where(v => v.VariantId == inquiry.VariantId.Value)
-                .Select(v => (int?)v.DurationMinutes)
-                .FirstOrDefaultAsync() ?? 60;
-
-            var start = inquiry.PreferredDateTime.Value;
-            var end = start.AddMinutes(duration);
+            var employeeId = variant.Service.EmployeeId;
+            var duration = variant.DurationMinutes > 0 ? variant.DurationMinutes : 60;
 
             var appointment = new Appointment
             {
-                VariantId = inquiry.VariantId.Value,
+                VariantId = variant.VariantId,
                 EmployeeId = employeeId,
-                ClientUserId = null, 
-                StartAt = start,
-                EndAt = end,
+
+                ClientUserId = null,
+                GuestFullName = inquiry.FullName,
+                GuestPhone = inquiry.Phone,
+                GuestEmail = inquiry.Email,
+
+                StartAt = inquiry.PreferredDateTime.Value,
+                EndAt = inquiry.PreferredDateTime.Value.AddMinutes(duration),
+
                 Notes = inquiry.Message,
-                Status = 1, 
-                CreatedAt = DateTime.Now
+                Status = 0,
+                CreatedAt = DateTime.Now,
+
+                FinalPrice = variant.Price,
+                InquiryId = inquiry.InquiryId
             };
 
             _db.Appointments.Add(appointment);
+
             inquiry.Status = (byte)InquiryStatus.Converted;
 
             await _db.SaveChangesAsync();
 
-            TempData["Ok"] = "Запитването е превърнато в записан час.";
             return RedirectToAction(nameof(Index));
+
         }
 
 

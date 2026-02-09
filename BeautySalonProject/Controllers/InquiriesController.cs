@@ -24,30 +24,39 @@ namespace BeautySalonProject.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int? variantId)
         {
             if (User.Identity?.IsAuthenticated ?? false)
                 return RedirectToAction("Create", "Appointments", new { area = "Client" });
 
             var vm = new InquiryCreateVm
             {
+                VariantId = variantId,
                 Categories = await LoadCategoriesAsync(),
-                ServiceVariants = new List<SelectListItem>() 
+                ServiceVariants = new List<SelectListItem>()
             };
 
             return View(vm);
         }
 
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(InquiryCreateVm vm)
         {
+
             if (User.Identity?.IsAuthenticated ?? false)
                 return RedirectToAction("Create", "Appointments", new { area = "Client" });
 
             vm.Categories = await LoadCategoriesAsync();
             vm.ServiceVariants = new List<SelectListItem>();
 
+            if (vm.CategoryId <= 0)
+                ModelState.AddModelError(nameof(vm.CategoryId), "Моля изберете категория.");
+
+            if (vm.ServiceVariantId <= 0)
+                ModelState.AddModelError(nameof(vm.ServiceVariantId), "Моля изберете услуга.");
             if (!ModelState.IsValid)
                 return View(vm);
 
