@@ -1,0 +1,65 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.Services.AdminServiceFormVm
+@{
+    ViewData["Title"] = "Нова услуга";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="sh-admin-page">
+    <div class="sh-admin-head mb-4">
+        <h1 class="sh-admin-title">Нова услуга</h1>
+        <div class="sh-admin-subtitle">Създаване на услуга и назначаване на служител</div>
+    </div>
+
+    <div class="sh-admin-card">
+        <form asp-area="Admin" asp-controller="Services" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Категория</label>
+                    <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select sh-input">
+                        <option value="">-- Изберете --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Служител</label>
+                    <select asp-for="EmployeeId" asp-items="Model.Employees" class="form-select sh-input">
+                        <option value="">-- Изберете --</option>
+                    </select>
+                    <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Име на услугата</label>
+                    <input asp-for="Name" class="form-control sh-input" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Описание</label>
+                    <textarea asp-for="Description" rows="4" class="form-control sh-input"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-check">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label">Активна</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn sh-btn-book" type="submit">Запази</button>
+                <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="Services" asp-action="Index">Отказ</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}
+
