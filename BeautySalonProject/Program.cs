@@ -13,13 +13,6 @@ var connectionString =
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddDbContext<BeautySalonDbContext>(options =>
-    options.UseSqlServer(connectionString));
-
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddDbContext<BeautySalonDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BeautySalon")));
-
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 

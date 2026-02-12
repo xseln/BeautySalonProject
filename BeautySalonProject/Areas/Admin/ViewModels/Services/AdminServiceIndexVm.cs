@@ -23,6 +23,8 @@
             public bool IsActive { get; set; }
             public int VariantsCount { get; set; }
             public int TotalVariantsCount { get; set; }
+            public decimal? MinPrice { get; set; }
+            public decimal? MaxPrice { get; set; }
         }
     }
 }

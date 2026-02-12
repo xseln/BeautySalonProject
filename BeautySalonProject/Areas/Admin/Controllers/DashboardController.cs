@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BeautySalonProject.Models;
 using BeautySalonProject.Areas.Admin.ViewModels;
+using BeautySalonProject.Data;
 
 namespace BeautySalonProject.Areas.Admin.Controllers
 {
@@ -10,9 +11,9 @@ namespace BeautySalonProject.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class DashboardController : Controller
     {
-        private readonly BeautySalonDbContext _db;
+        private readonly ApplicationDbContext _db;
 
-        public DashboardController(BeautySalonDbContext db)
+        public DashboardController(ApplicationDbContext db)
         {
             _db = db;
         }

@@ -5,6 +5,7 @@ using BeautySalonProject.Models;
 using BeautySalonProject.Areas.Admin.ViewModels;
 using BeautySalonProject.Models.Enums;
 using BeautySalonProject.Areas.Admin.ViewModels.Inquiries;
+using BeautySalonProject.Data;
 
 namespace BeautySalonProject.Areas.Admin.Controllers
 {
@@ -12,9 +13,9 @@ namespace BeautySalonProject.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class InquiriesController : Controller
     {
-        private readonly BeautySalonDbContext _db;
+        private readonly ApplicationDbContext _db;
 
-        public InquiriesController(BeautySalonDbContext db)
+        public InquiriesController(ApplicationDbContext db)
         {
             _db = db;
         }

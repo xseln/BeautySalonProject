@@ -65,7 +65,7 @@
                         <th>Категория</th>
                         <th>Услуга</th>
                         <th>Служител</th>
-                        <th>Варианти</th>
+                        <th>Цена</th>
                         <th>Статус</th>
                         <th class="text-end">Действия</th>
                     </tr>
@@ -78,11 +78,24 @@
                             <td class="text-muted">@s.CategoryName</td>
                             <td class="fw-semibold">@s.ServiceName</td>
                             <td>@s.EmployeeName</td>
-                            <td>
-                                <span class="badge text-bg-light">
-                                    @s.VariantsCount активни / @s.TotalVariantsCount общо
-                                </span>
-                            </td>
+                                   <td class="fw-semibold">
+                            @if (s.MinPrice is not null && s.MaxPrice is not null)
+                            {
+                                if (s.MinPrice == s.MaxPrice)
+                                {
+                        <span>@s.MinPrice:0.## €</span>
+                                }
+                                else
+                                {
+                        <span>@s.MinPrice:0.## – @s.MaxPrice:0.## €</span>
+                                }
+                            }
+                            else
+                            {
+                <span class="text-muted">—</span>
+                            }
+                        </td>
+
                             <td>
                                 @if (s.IsActive)
                                 {

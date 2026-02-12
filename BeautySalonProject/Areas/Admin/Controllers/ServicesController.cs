@@ -4,6 +4,7 @@ using BeautySalonProject.Models;
 using Microsoft.EntityFrameworkCore;
 using BeautySalonProject.Areas.Admin.ViewModels.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using BeautySalonProject.Data;
 
 namespace BeautySalonProject.Areas.Admin.Controllers
 {
@@ -12,9 +13,9 @@ namespace BeautySalonProject.Areas.Admin.Controllers
 
     public class ServicesController : Controller
     {
-        private readonly BeautySalonDbContext _db;
+        private readonly ApplicationDbContext _db;
 
-        public ServicesController(BeautySalonDbContext db)
+        public ServicesController(ApplicationDbContext db)
         {
             _db = db;
         }

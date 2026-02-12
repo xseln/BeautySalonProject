@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BeautySalonProject.ViewModels;
 using static BeautySalonProject.ViewModels.CombinedPriceListVm;
+using BeautySalonProject.Data;
 
 
 
@@ -10,9 +11,9 @@ namespace BeautySalonProject.Controllers
 {
     public class ServicesController : Controller
     {
-        private readonly BeautySalonDbContext _db;
+        private readonly ApplicationDbContext _db;
 
-        public ServicesController(BeautySalonDbContext db)
+        public ServicesController(ApplicationDbContext db)
         {
             _db = db;
         }

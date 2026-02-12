@@ -6,17 +6,18 @@ using BeautySalonProject.ViewModels;
 using BeautySalonProject.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using BeautySalonProject.Data;
 
 namespace BeautySalonProject.Controllers
 {
     [AllowAnonymous]
     public class InquiriesController : Controller
     {
-        private readonly BeautySalonDbContext _db;
+        private readonly ApplicationDbContext _db;
         private readonly IEmailSender _email;
         private readonly EmailSettings _settings;
 
-        public InquiriesController(BeautySalonDbContext db, IEmailSender email, IOptions<EmailSettings> settings)
+        public InquiriesController(ApplicationDbContext db, IEmailSender email, IOptions<EmailSettings> settings)
         {
             _db = db;
             _email = email;

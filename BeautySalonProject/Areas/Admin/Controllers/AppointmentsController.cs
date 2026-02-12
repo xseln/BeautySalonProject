@@ -5,6 +5,7 @@ using BeautySalonProject.Models;
 using BeautySalonProject.Models.Enums;
 using BeautySalonProject.Areas.Admin.ViewModels.Appointments;
 using Microsoft.AspNetCore.Identity;
+using BeautySalonProject.Data;
 
 
 namespace BeautySalonProject.Areas.Admin.Controllers
@@ -13,10 +14,10 @@ namespace BeautySalonProject.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class AppointmentsController : Controller
     {
-        private readonly BeautySalonDbContext _db;
+        private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public AppointmentsController(BeautySalonDbContext db, UserManager<IdentityUser> userManager)
+        public AppointmentsController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
         {
             _db = db;
             _userManager = userManager;
