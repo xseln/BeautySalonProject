@@ -21,54 +21,28 @@ namespace BeautySalonProject.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int? categoryId, bool? active)
+        public async Task<IActionResult> Index()
         {
-            var q = _db.Services
+            var items = await _db.Services
                 .Include(s => s.Category)
                 .Include(s => s.Employee)
-                .Include(s => s.ServiceVariants)
-                .AsQueryable();
-
-            if (categoryId.HasValue)
-                q = q.Where(s => s.CategoryId == categoryId.Value);
-
-            if (active.HasValue)
-                q = q.Where(s => s.IsActive == active.Value);
-
-            var items = await q
                 .OrderBy(s => s.Category.Name)
                 .ThenBy(s => s.Name)
                 .Select(s => new AdminServiceIndexVm.Row
                 {
                     ServiceId = s.ServiceId,
+                    Name = s.Name,
                     CategoryName = s.Category.Name,
-                    ServiceName = s.Name,
                     EmployeeName = s.Employee.FirstName + " " + s.Employee.LastName,
                     IsActive = s.IsActive,
                     VariantsCount = s.ServiceVariants.Count(v => v.IsActive),
-                    TotalVariantsCount = s.ServiceVariants.Count
+                    TotalVariantsCount = s.ServiceVariants.Count,
+                    MinPrice = s.ServiceVariants.Where(v => v.IsActive).Select(v => (decimal?)v.Price).Min(),
+                    MaxPrice = s.ServiceVariants.Where(v => v.IsActive).Select(v => (decimal?)v.Price).Max()
                 })
                 .ToListAsync();
 
-            var categories = await _db.ServiceCategories
-                .Where(c => c.IsActive)
-                .OrderBy(c => c.Name)
-                .Select(c => new AdminServiceIndexVm.CategoryFilter
-                {
-                    CategoryId = c.CategoryId,
-                    Name = c.Name
-                })
-                .ToListAsync();
-
-            var vm = new AdminServiceIndexVm
-            {
-                CategoryId = categoryId,
-                Active = active,
-                Categories = categories,
-                Items = items
-            };
-
-            return View(vm);
+            return View(new AdminServiceIndexVm { Items = items });
         }
 
         [HttpGet]
@@ -103,6 +77,7 @@ namespace BeautySalonProject.Areas.Admin.Controllers
             TempData["Ok"] = "Услугата е създадена.";
             return RedirectToAction(nameof(Edit), new { id = service.ServiceId });
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -122,6 +97,7 @@ namespace BeautySalonProject.Areas.Admin.Controllers
             await FillLookups(vm);
             return View(vm);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(AdminServiceFormVm vm)
@@ -147,6 +123,7 @@ namespace BeautySalonProject.Areas.Admin.Controllers
             TempData["Ok"] = "Промените са запазени.";
             return RedirectToAction(nameof(Edit), new { id = s.ServiceId });
         }
+
         private async Task FillLookups(AdminServiceFormVm vm)
         {
             vm.Categories = await _db.ServiceCategories
@@ -169,8 +146,8 @@ namespace BeautySalonProject.Areas.Admin.Controllers
                 })
                 .ToListAsync();
         }
-
-
     }
+
 }
+
 

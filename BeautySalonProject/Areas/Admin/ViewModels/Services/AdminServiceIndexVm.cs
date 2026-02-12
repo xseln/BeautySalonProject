@@ -17,14 +17,15 @@
         public class Row
         {
             public int ServiceId { get; set; }
+            public string Name { get; set; } = "";
             public string CategoryName { get; set; } = "";
-            public string ServiceName { get; set; } = "";
             public string EmployeeName { get; set; } = "";
             public bool IsActive { get; set; }
             public int VariantsCount { get; set; }
             public int TotalVariantsCount { get; set; }
             public decimal? MinPrice { get; set; }
             public decimal? MaxPrice { get; set; }
+
         }
     }
 }

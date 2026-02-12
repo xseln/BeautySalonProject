@@ -5,21 +5,19 @@
 }
 
 <div class="sh-admin-page">
+
     <div class="sh-admin-head mb-4">
-        <h1 class="sh-admin-title">Услуги и цени</h1>
-        <div class="sh-admin-subtitle">Управление на услуги, служители и варианти</div>
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+            <div>
+                <h1 class="sh-admin-title mb-1">Услуги и цени</h1>
+                <div class="sh-admin-subtitle">Управление на услуги, служители и варианти</div>
+            </div>
+
+            <a class="btn sh-btn-book"
+               asp-area="Admin" asp-controller="Services" asp-action="Create">+ Нова услуга</a>
+        </div>
     </div>
-    <a class="btn sh-btn-book" asp-area="Admin" asp-controller="Services" asp-action="Create">
-		Създай нова услуга</a>
-</div>
-      @if (TempData["Ok"] != null)
-      {
-            <div class="alert alert-success">@TempData["Ok"]</div>
-      }
-      @if (TempData["Err"] != null)
-      {
-            <div class="alert alert-danger">@TempData["Err"]</div>
-      }
+
     <div class="sh-admin-card mb-3">
         <form method="get" class="row g-2 align-items-end">
             <div class="col-md-5">
@@ -52,16 +50,11 @@
         </form>
     </div>
 
-    <div class="text-muted small mb-2">
-        Показани: <b>@Model.Items.Count</b> услуги
-    </div>
-
     <div class="sh-admin-card">
         <div class="table-responsive">
             <table class="table align-middle mb-0">
                 <thead>
                     <tr class="text-muted small">
-                        <th style="width:70px;">ID</th>
                         <th>Категория</th>
                         <th>Услуга</th>
                         <th>Служител</th>
@@ -73,57 +66,52 @@
                 <tbody>
                     @foreach (var s in Model.Items)
                     {
-                        <tr>
-                            <td class="text-muted">@s.ServiceId</td>
-                            <td class="text-muted">@s.CategoryName</td>
-                            <td class="fw-semibold">@s.ServiceName</td>
-                            <td>@s.EmployeeName</td>
-                                   <td class="fw-semibold">
-                            @if (s.MinPrice is not null && s.MaxPrice is not null)
-                            {
-                                if (s.MinPrice == s.MaxPrice)
-                                {
-                        <span>@s.MinPrice:0.## €</span>
-                                }
-                                else
-                                {
-                        <span>@s.MinPrice:0.## – @s.MaxPrice:0.## €</span>
-                                }
-                            }
-                            else
-                            {
-                <span class="text-muted">—</span>
-                            }
-                        </td>
+                            <tr>
+                                <td class="text-muted">@s.CategoryName</td>
+                                <td class="fw-semibold">@s.Name</td>
+                                <td>@s.EmployeeName</td>
+                                <td>
+                                @{
+                                    var min = s.MinPrice;
+                                    var max = s.MaxPrice;
 
-                            <td>
+                                    string priceText =
+                                        !min.HasValue ? "—" :
+                                        (min == max ? $"{min.Value:0.##} €" : $"{min.Value:0.##} – {max!.Value:0.##} €");
+                                }
+                                    <span class="fw-semibold">@priceText</span>
+                                </td>
+
+                                <td>
                                 @if (s.IsActive)
                                 {
-                                        <span class="badge text-bg-success">Активна</span>
+                                            <span class="badge text-bg-success">Активна</span>
                                 }
                                 else
                                 {
-                                        <span class="badge text-bg-secondary">Неактивна</span>
+                                            <span class="badge text-bg-secondary">Неактивна</span>
                                 }
-                            </td>
-                            <td class="text-end">
-                                <a class="btn btn-sm btn-outline-primary"
-                                   asp-area="Admin" asp-controller="Services" asp-action="Edit" asp-route-id="@s.ServiceId">
-                                    Редакция
-                                </a>
-                                <a class="btn btn-sm btn-outline-dark"
-                                   asp-area="Admin" asp-controller="ServiceVariants" asp-action="Index" asp-route-serviceId="@s.ServiceId">
-                                    Варианти
-                                </a>
-                            </td>
-                        </tr>
+                                </td>
+
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-area="Admin" asp-controller="Services" asp-action="Edit" asp-route-id="@s.ServiceId">
+                                        Редакция
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-dark"
+                                       asp-area="Admin" asp-controller="ServiceVariants" asp-action="Index" asp-route-serviceId="@s.ServiceId">
+                                        Варианти
+                                    </a>
+                                </td>
+                            </tr>
                     }
 
                     @if (!Model.Items.Any())
                     {
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">Няма услуги по избрания филтър.</td>
-                        </tr>
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">Няма услуги по избрания филтър.</td>
+                            </tr>
                     }
                 </tbody>
             </table>

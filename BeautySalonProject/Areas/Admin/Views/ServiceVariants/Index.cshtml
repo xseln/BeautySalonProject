@@ -1,0 +1,82 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.ServiceVariants.AdminServiceVariantIndexVm
+@{
+    ViewData["Title"] = "Варианти и цени";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="sh-admin-page">
+
+    <div class="sh-admin-head mb-4 d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+            <h1 class="sh-admin-title">@Model.ServiceName</h1>
+            <div class="sh-admin-subtitle">
+                Категория: @Model.CategoryName
+            </div>
+        </div>
+
+        <a class="btn btn-outline-secondary"
+           asp-area="Admin" asp-controller="Services" asp-action="Index">
+            ← Назад към услугите
+        </a>
+    </div>
+
+    <div class="mb-3">
+        <a class="btn sh-btn-book"
+           asp-area="Admin" asp-controller="ServiceVariants" asp-action="Create"
+           asp-route-serviceId="@Model.ServiceId">
+            ➕ Добави вариант
+        </a>
+    </div>
+
+    <div class="sh-admin-card">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr class="text-muted small">
+                        <th>Вариант</th>
+                        <th>Цена</th>
+                        <th>Време</th>
+                        <th>Статус</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in Model.Items)
+                    {
+                            <tr>
+                                <td class="fw-semibold">@v.VariantName</td>
+                                    <td>@v.Price.ToString("0.00") €.</td>
+                                <td>@v.DurationMinutes мин.</td>
+                                <td>
+                                @if (v.IsActive)
+                                {
+                                            <span class="badge text-bg-success">Активен</span>
+                                }
+                                else
+                                {
+                                            <span class="badge text-bg-secondary">Неактивен</span>
+                                }
+                                </td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-area="Admin" asp-controller="ServiceVariants" asp-action="Edit"
+                                       asp-route-id="@v.VariantId">
+                                        Редакция
+                                    </a>
+                                </td>
+                            </tr>
+                    }
+
+                    @if (!Model.Items.Any())
+                    {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    Няма добавени варианти.
+                                </td>
+                            </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

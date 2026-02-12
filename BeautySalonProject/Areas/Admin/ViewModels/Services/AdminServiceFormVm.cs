@@ -20,8 +20,10 @@ namespace BeautySalonProject.Areas.Admin.ViewModels.Services
         public string? Description { get; set; }
 
         public bool IsActive { get; set; } = true;
+		[Required, StringLength(120)]
+		public string VariantName { get; set; } = "";
 
-        public List<SelectListItem> Categories { get; set; } = new();
+		public List<SelectListItem> Categories { get; set; } = new();
         public List<SelectListItem> Employees { get; set; } = new();
     }
 }
