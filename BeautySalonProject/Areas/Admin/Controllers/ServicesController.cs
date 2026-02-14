@@ -21,31 +21,57 @@ namespace BeautySalonProject.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? categoryId, bool? active)
         {
-            var items = await _db.Services
+            var q = _db.Services
                 .Include(s => s.Category)
                 .Include(s => s.Employee)
-                .OrderBy(s => s.Category.Name)
-                .ThenBy(s => s.Name)
-                .Select(s => new AdminServiceIndexVm.Row
-                {
-                    ServiceId = s.ServiceId,
-                    Name = s.Name,
-                    CategoryName = s.Category.Name,
-                    EmployeeName = s.Employee.FirstName + " " + s.Employee.LastName,
-                    IsActive = s.IsActive,
-                    VariantsCount = s.ServiceVariants.Count(v => v.IsActive),
-                    TotalVariantsCount = s.ServiceVariants.Count,
-                    MinPrice = s.ServiceVariants.Where(v => v.IsActive).Select(v => (decimal?)v.Price).Min(),
-                    MaxPrice = s.ServiceVariants.Where(v => v.IsActive).Select(v => (decimal?)v.Price).Max()
-                })
-                .ToListAsync();
+                .Include(s => s.ServiceVariants)
+                .AsQueryable();
 
-            return View(new AdminServiceIndexVm { Items = items });
+            if (categoryId.HasValue)
+                q = q.Where(s => s.CategoryId == categoryId.Value);
+
+            if (active.HasValue)
+                q = q.Where(s => s.IsActive == active.Value);
+
+            var items = await q
+                    .OrderBy(s => s.Category.Name)
+                    .ThenBy(s => s.Name)
+                    .Select(s => new AdminServiceIndexVm.Row
+                    {
+                        ServiceId = s.ServiceId,
+                        Name = s.Name,
+                        CategoryName = s.Category.Name,
+                        EmployeeName = s.Employee.FirstName + " " + s.Employee.LastName,
+                        IsActive = s.IsActive,
+                        VariantsCount = s.ServiceVariants.Count(v => v.IsActive),
+                        TotalVariantsCount = s.ServiceVariants.Count,
+                        MinPrice = s.ServiceVariants.Where(v => v.IsActive).Select(v => (decimal?)v.Price).Min(),
+                        MaxPrice = s.ServiceVariants.Where(v => v.IsActive).Select(v => (decimal?)v.Price).Max()
+                    })
+                    .ToListAsync();
+            var categories = await _db.ServiceCategories
+                    .Where(c => c.IsActive)
+                    .OrderBy(c => c.Name)
+                    .Select(c => new AdminServiceIndexVm.CategoryFilter
+                    {
+                        CategoryId = c.CategoryId,
+                        Name = c.Name
+                    })
+                    .ToListAsync();
+
+            var vm = new AdminServiceIndexVm
+            {
+                CategoryId = categoryId,
+                Active = active,
+                Categories = categories,
+                Items = items
+            };
+
+            return View(vm);
         }
-
-        [HttpGet]
+            [HttpGet]
         public async Task<IActionResult> Create()
         {
             var vm = new AdminServiceFormVm();
@@ -58,6 +84,11 @@ namespace BeautySalonProject.Areas.Admin.Controllers
         public async Task<IActionResult> Create(AdminServiceFormVm vm)
         {
             await FillLookups(vm);
+            if (vm.CategoryId <= 0)
+                ModelState.AddModelError(nameof(vm.CategoryId), "Моля изберете категория.");
+
+            if (vm.EmployeeId <= 0)
+                ModelState.AddModelError(nameof(vm.EmployeeId), "Моля изберете служител.");
 
             if (!ModelState.IsValid)
                 return View(vm);
@@ -105,6 +136,11 @@ namespace BeautySalonProject.Areas.Admin.Controllers
             if (vm.ServiceId == null) return BadRequest();
 
             await FillLookups(vm);
+            if (vm.CategoryId <= 0)
+                ModelState.AddModelError(nameof(vm.CategoryId), "Моля изберете категория.");
+
+            if (vm.EmployeeId <= 0)
+                ModelState.AddModelError(nameof(vm.EmployeeId), "Моля изберете служител.");
 
             if (!ModelState.IsValid)
                 return View(vm);
@@ -145,6 +181,36 @@ namespace BeautySalonProject.Areas.Admin.Controllers
                     Text = e.FirstName + " " + e.LastName
                 })
                 .ToListAsync();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var service = await _db.Services
+                .Include(s => s.ServiceVariants)
+                .FirstOrDefaultAsync(s => s.ServiceId == id);
+
+            if (service == null) return NotFound();
+
+            var variantIds = service.ServiceVariants.Select(v => v.VariantId).ToList();
+
+            var hasAppointments = await _db.Appointments
+                .AnyAsync(a => variantIds.Contains(a.VariantId));
+
+            if (hasAppointments)
+            {
+                TempData["Err"] = "Не може да изтриеш услугата, защото има записвания към нейни варианти.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _db.ServiceVariants.RemoveRange(service.ServiceVariants);
+            _db.Services.Remove(service);
+
+            await _db.SaveChangesAsync();
+
+            TempData["Ok"] = "Услугата е изтрита.";
+            return RedirectToAction(nameof(Index));
         }
     }
 

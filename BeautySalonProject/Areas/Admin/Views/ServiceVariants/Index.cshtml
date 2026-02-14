@@ -50,20 +50,31 @@
                                 <td>
                                 @if (v.IsActive)
                                 {
-                                            <span class="badge text-bg-success">Активен</span>
+                                            <span class="badge text-bg-success text-dark">Активен</span>
                                 }
                                 else
                                 {
-                                            <span class="badge text-bg-secondary">Неактивен</span>
+                                            <span class="badge text-bg-secondary text-dark">Неактивен</span>
                                 }
                                 </td>
-                                <td class="text-end">
-                                    <a class="btn btn-sm btn-outline-primary"
-                                       asp-area="Admin" asp-controller="ServiceVariants" asp-action="Edit"
-                                       asp-route-id="@v.VariantId">
-                                        Редакция
-                                    </a>
-                                </td>
+                                   <td class="text-end">
+        <div class="d-inline-flex gap-2">
+            <a class="btn btn-sm btn-outline-primary"
+               asp-area="Admin" asp-controller="ServiceVariants" asp-action="Edit"
+               asp-route-id="@v.VariantId">
+                Редакция
+            </a>
+            <form asp-area="Admin" asp-controller="ServiceVariants" asp-action="Delete" method="post"
+                  onsubmit="return confirm('Сигурна ли си, че искаш да деактивираш този вариант?');">
+                                        @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@v.VariantId" />
+                <button class="btn btn-sm btn-outline-danger" type="submit">
+                    Изтрий
+                </button>
+            </form>
+        </div>
+    </td>
+
                             </tr>
                     }
 

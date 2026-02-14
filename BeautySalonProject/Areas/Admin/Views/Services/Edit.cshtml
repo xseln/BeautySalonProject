@@ -24,17 +24,21 @@
         <form asp-area="Admin" asp-controller="Services" asp-action="Edit" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="ServiceId" />
-
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Категория</label>
-                    <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select sh-input"></select>
+                    <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select sh-input">
+                        <option value="">-- Изберете категория --</option>
+                    </select>
                     <span asp-validation-for="CategoryId" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Служител</label>
-                    <select asp-for="EmployeeId" asp-items="Model.Employees" class="form-select sh-input"></select>
+                    <select asp-for="EmployeeId" asp-items="Model.Employees" class="form-select sh-input">
+                        <option value="">-- Изберете служител --</option>
+                    </select>
                     <span asp-validation-for="EmployeeId" class="text-danger"></span>
                 </div>
 

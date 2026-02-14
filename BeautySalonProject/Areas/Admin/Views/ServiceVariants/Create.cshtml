@@ -1,0 +1,57 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.ServiceVariants.AdminServiceVariantFormVm
+@{
+    ViewData["Title"] = "Добави вариант";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="sh-admin-page">
+    <div class="sh-admin-head mb-4">
+        <h1 class="sh-admin-title">Добави вариант</h1>
+        <div class="sh-admin-subtitle">@Model.ServiceName (@Model.CategoryName)</div>
+    </div>
+
+    <div class="sh-admin-card">
+        <form asp-area="Admin" asp-controller="ServiceVariants" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ServiceId" />
+
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">Име на варианта</label>
+                    <input asp-for="VariantName" class="form-control sh-input" />
+                    <span asp-validation-for="VariantName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Цена (€)</label>
+                    <input asp-for="Price" class="form-control sh-input" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Време (минути)</label>
+                    <input asp-for="DurationMinutes" class="form-control sh-input" />
+                    <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-check">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label">Активен</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn sh-btn-book" type="submit">Запази</button>
+                <a class="btn btn-outline-secondary"
+                   asp-area="Admin" asp-controller="ServiceVariants" asp-action="Index"
+                   asp-route-serviceId="@Model.ServiceId">Отказ</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+     <partial name="_ValidationScriptsPartial" />
+}

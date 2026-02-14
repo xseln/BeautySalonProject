@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace BeautySalonProject.Areas.Admin.ViewModels.Services
@@ -20,10 +21,10 @@ namespace BeautySalonProject.Areas.Admin.ViewModels.Services
         public string? Description { get; set; }
 
         public bool IsActive { get; set; } = true;
-		[Required, StringLength(120)]
-		public string VariantName { get; set; } = "";
-
-		public List<SelectListItem> Categories { get; set; } = new();
+		
+        [ValidateNever]
+        public List<SelectListItem> Categories { get; set; } = new();
+        [ValidateNever]
         public List<SelectListItem> Employees { get; set; } = new();
     }
 }

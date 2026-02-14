@@ -4,6 +4,10 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
+@if (TempData["Err"] != null)
+{
+        <div class="alert alert-danger">@TempData["Err"]</div>
+}
 <div class="sh-admin-page">
 
     <div class="sh-admin-head mb-4">
@@ -85,11 +89,11 @@
                                 <td>
                                 @if (s.IsActive)
                                 {
-                                            <span class="badge text-bg-success">Активна</span>
+                                            <span class="badge text-bg-success text-dark">Активна</span>
                                 }
                                 else
                                 {
-                                            <span class="badge text-bg-secondary">Неактивна</span>
+                                            <span class="badge text-bg-secondary text-dark">Неактивна</span>
                                 }
                                 </td>
 
@@ -103,6 +107,15 @@
                                        asp-area="Admin" asp-controller="ServiceVariants" asp-action="Index" asp-route-serviceId="@s.ServiceId">
                                         Варианти
                                     </a>
+                                    <form asp-area="Admin" asp-controller="Services" asp-action="Delete" method="post" class="d-inline"
+                                       onsubmit="return confirm('Сигурна ли си, че искаш да изтриеш услугата? Това ще изтрие и вариантите ѝ.');">
+                                       @Html.AntiForgeryToken()
+                                   <input type="hidden" name="id" value="@s.ServiceId" />
+                                   <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        Изтрий
+                                   </button>
+                                   </form>
+                            
                                 </td>
                             </tr>
                     }
