@@ -4,6 +4,7 @@ using BeautySalonProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeautySalonProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260218143531_RemoveEmployeeWorkHours")]
+    partial class RemoveEmployeeWorkHours
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,12 +135,7 @@ namespace BeautySalonProject.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<int?>("PrimaryCategoryId")
-                        .HasColumnType("int");
-
                     b.HasKey("EmployeeId");
-
-                    b.HasIndex("PrimaryCategoryId");
 
                     b.ToTable("Employees");
                 });
@@ -566,16 +564,6 @@ namespace BeautySalonProject.Data.Migrations
                     b.Navigation("Inquiry");
 
                     b.Navigation("Variant");
-                });
-
-            modelBuilder.Entity("BeautySalonProject.Models.Employee", b =>
-                {
-                    b.HasOne("BeautySalonProject.Models.ServiceCategory", "PrimaryCategory")
-                        .WithMany()
-                        .HasForeignKey("PrimaryCategoryId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("PrimaryCategory");
                 });
 
             modelBuilder.Entity("BeautySalonProject.Models.EmployeeWorkDay", b =>

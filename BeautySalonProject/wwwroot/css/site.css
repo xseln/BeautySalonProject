@@ -722,5 +722,11 @@ body {
     flex: 1;
     background: #f6f3ef;
 }
+.sh-badge-service {
+    border: 1px solid rgba(200,161,90,.35);
+    background: rgba(255,255,255,.75) !important;
+    color: #3a2c20 !important;
+    font-weight: 600;
+}
 
 

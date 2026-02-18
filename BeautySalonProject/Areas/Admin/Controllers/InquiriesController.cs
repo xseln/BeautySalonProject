@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BeautySalonProject.Models;
-using BeautySalonProject.Areas.Admin.ViewModels;
-using BeautySalonProject.Models.Enums;
 using BeautySalonProject.Areas.Admin.ViewModels.Inquiries;
 using BeautySalonProject.Data;
 

@@ -1,4 +1,4 @@
-﻿namespace BeautySalonProject.Areas.Admin.ViewModels
+﻿namespace BeautySalonProject.Areas.Admin.ViewModels.Dashboard
 {
     public class DashboardVm
     {

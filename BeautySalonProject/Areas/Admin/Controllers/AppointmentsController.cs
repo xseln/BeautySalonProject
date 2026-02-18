@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BeautySalonProject.Models;
-using BeautySalonProject.Models.Enums;
+using BeautySalonProject.Areas.Admin.ViewModels.Inquiries;
 using BeautySalonProject.Areas.Admin.ViewModels.Appointments;
 using Microsoft.AspNetCore.Identity;
 using BeautySalonProject.Data;
@@ -23,9 +23,9 @@ namespace BeautySalonProject.Areas.Admin.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(DateTime? date, byte? status)
+        public async Task<IActionResult> Index(DateTime? date, byte? status, int? employeeId)
         {
-            var day = date?.Date ?? DateTime.Today;
+            var day = date?.Date;
 
             var q = _db.Appointments
                 .Include(a => a.Employee)
@@ -33,7 +33,27 @@ namespace BeautySalonProject.Areas.Admin.Controllers
                     .ThenInclude(v => v.Service)
                 .AsQueryable();
 
-            q = q.Where(a => a.StartAt >= day && a.StartAt < day.AddDays(1));
+            if (employeeId.HasValue)
+                q = q.Where(a => a.EmployeeId == employeeId.Value);
+
+            if (day.HasValue)
+            {
+                q = q.Where(a => a.StartAt >= day.Value && a.StartAt < day.Value.AddDays(1));
+            }
+            else
+            {
+                if (employeeId.HasValue)
+                {
+                    var now = DateTime.Now;
+                    q = q.Where(a => a.StartAt >= now);
+                }
+                else
+                {
+                    var today = DateTime.Today;
+                    q = q.Where(a => a.StartAt >= today && a.StartAt < today.AddDays(1));
+                    day = today;
+                }
+            }
 
             if (status.HasValue)
                 q = q.Where(a => a.Status == status.Value);
@@ -55,7 +75,7 @@ namespace BeautySalonProject.Areas.Admin.Controllers
 
             var vm = new AdminAppointmentsIndexVm
             {
-                Date = day,
+                Date = day ?? DateTime.Today, 
                 StatusFilter = status,
                 Rows = rows
             };

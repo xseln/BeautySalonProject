@@ -1,0 +1,118 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.Employees.AdminEmployeeWeeklyScheduleVm
+
+@{
+    var start = Model.WeekStart.ToDateTime(new TimeOnly(0, 0));
+    var end = Model.WeekStart.AddDays(6).ToDateTime(new TimeOnly(0, 0));
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="sh-admin-title mb-1">
+            График: @Model.EmployeeName
+            <span class="text-muted" style="font-weight:400;">
+                (@start.ToString("dd.MM") – @end.ToString("dd.MM"))
+            </span>
+        </h1>
+        <div class="text-muted">Седмица по дати (стрелки за смяна)</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      
+        <a class="btn btn-outline-secondary"
+           asp-area="Admin" asp-controller="Employees" asp-action="Weekly"
+           asp-route-id="@Model.EmployeeId"
+           asp-route-week="@Model.WeekStart.AddDays(-7).ToDateTime(new TimeOnly(0,0)).ToString("yyyy-MM-dd")">
+            ←
+        </a>
+
+        <a class="btn btn-outline-secondary"
+           asp-area="Admin" asp-controller="Employees" asp-action="Weekly"
+           asp-route-id="@Model.EmployeeId"
+           asp-route-week="@Model.WeekStart.AddDays(7).ToDateTime(new TimeOnly(0,0)).ToString("yyyy-MM-dd")">
+            →
+        </a>
+
+        <a class="btn btn-outline-secondary"
+           asp-area="Admin" asp-controller="Employees" asp-action="Index">Назад</a>
+    </div>
+    @if (TempData["Ok"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Ok"]
+        </div>
+    }
+</div>
+
+<form asp-area="Admin" asp-controller="Employees" asp-action="Weekly" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="EmployeeId" />
+    <input type="hidden" asp-for="WeekStart" />
+
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr class="text-muted small">
+                    <th>Ден</th>
+                    <th>Дата</th>
+                    <th class="text-center">Работи</th>
+                    <th>От</th>
+                    <th>До</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Days.Count; i++)
+                {
+                    <tr>
+                        <td class="fw-semibold">
+                            @Model.Days[i].DayName
+                            <input asp-for="Days[i].DayName" type="hidden" />
+                            <input asp-for="Days[i].DayOfWeek" type="hidden" />
+                            <input asp-for="Days[i].Date" type="hidden" />
+                        </td>
+
+                        <td>@Model.Days[i].Date.ToString("dd.MM.yyyy")</td>
+
+                        <td class="text-center">
+                            <input asp-for="Days[i].IsWorking" class="form-check-input" data-row="@i" />
+                        </td>
+
+                        <td style="max-width:180px">
+                            <input asp-for="Days[i].StartTime" class="form-control" type="time"
+                                   value="@(Model.Days[i].StartTime?.ToString("HH\\:mm") ?? "")"
+                                   data-start="@i" />
+                        </td>
+
+                        <td style="max-width:180px">
+                            <input asp-for="Days[i].EndTime" class="form-control" type="time"
+                                   value="@(Model.Days[i].EndTime?.ToString("HH\\:mm") ?? "")"
+                                   data-end="@i" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-3 d-flex gap-2">
+        <button class="btn sh-btn-book" type="submit">Запази</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function toggleRow(i) {
+            const chk = document.querySelector(`[data-row='${i}']`);
+            const s = document.querySelector(`[data-start='${i}']`);
+            const e = document.querySelector(`[data-end='${i}']`);
+            const on = chk && chk.checked;
+            if (s) s.disabled = !on;
+            if (e) e.disabled = !on;
+        }
+
+        document.querySelectorAll("[data-row]").forEach(chk => {
+            const i = chk.getAttribute("data-row");
+            toggleRow(i);
+            chk.addEventListener("change", () => toggleRow(i));
+        });
+    </script>
+}

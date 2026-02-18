@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BeautySalonProject.Models;
-using BeautySalonProject.Areas.Admin.ViewModels;
 using BeautySalonProject.Data;
+using BeautySalonProject.Areas.Admin.ViewModels.Dashboard;
 
 namespace BeautySalonProject.Areas.Admin.Controllers
 {

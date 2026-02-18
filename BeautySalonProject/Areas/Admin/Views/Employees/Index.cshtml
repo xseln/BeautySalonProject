@@ -1,0 +1,127 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.Employees.AdminEmployeeIndexVm
+@{
+    ViewData["Title"] = "Служители";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="sh-admin-page">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+            <h1 class="sh-admin-title mb-1">Служители</h1>
+            <div class="text-muted">Управление на служители и услуги</div>
+        </div>
+
+        <a class="btn sh-btn-book"
+           asp-area="Admin" asp-controller="Employees" asp-action="Create">
+            + Нов служител
+        </a>
+    </div>
+
+    <div class="sh-admin-card mb-3">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Активност</label>
+                <select class="form-select" name="active">
+                    <option value="" selected="@(Model.Active == null)">Всички</option>
+                    <option value="true" selected="@(Model.Active == true)">Активни</option>
+                    <option value="false" selected="@(Model.Active == false)">Неактивни</option>
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn sh-btn-book w-100">Филтрирай</button>
+                <a class="btn btn-outline-secondary w-100"
+                   asp-area="Admin" asp-controller="Employees" asp-action="Index">
+                    Изчисти
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="sh-admin-card">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr class="text-muted small">
+                        <th>Служител</th>
+                        <th>Длъжност</th>
+                        <th>Контакт</th>
+                        <th>Услуги</th>
+                        <th class="text-center">Статус</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.Items)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@e.FullName</td>
+
+                            <td class="text-muted">@(!string.IsNullOrWhiteSpace(e.JobTitle) ? e.JobTitle : "—")</td>
+
+                            <td>
+                                <div class="text-muted small">@(!string.IsNullOrWhiteSpace(e.Phone) ? e.Phone : "—")</div>
+                                <div class="text-muted small">@(!string.IsNullOrWhiteSpace(e.Email) ? e.Email : "—")</div>
+                            </td>
+
+                            <td>
+                                @if (e.Services != null && e.Services.Count > 0)
+                                {
+                                        <div class="d-flex flex-wrap gap-1">
+                                        @foreach (var s in e.Services)
+                                        {
+                                                    <span class="badge rounded-pill text-bg-light text-dark sh-badge-service">@s</span>
+                                        }
+                                        </div>
+                                }
+                                else
+                                {
+                                        <span class="text-muted">—</span>
+                                }
+                            </td>
+
+                            <td class="text-center">
+                                @if (e.IsActive)
+                                {
+                                        <span class="badge text-bg-success text-dark">Активен</span>
+                                }
+                                else
+                                {
+                                        <span class="badge text-bg-secondary text-dark">Неактивен</span>
+                                }
+                            </td>
+
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-area="Admin" asp-controller="Employees" asp-action="Edit"
+                                       asp-route-id="@e.EmployeeId">
+                                        Редакция
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-dark"
+                                       asp-area="Admin" asp-controller="Employees" asp-action="Details"
+                                       asp-route-id="@e.EmployeeId">
+                                        Детайли
+                                    </a>
+                                        <a class="btn btn-sm btn-outline-dark"
+                                           asp-area="Admin" asp-controller="Employees" asp-action="Weekly"
+                                           asp-route-id="@e.EmployeeId">
+                                             График
+                                   </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                    @if (Model.Items == null || Model.Items.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">Няма служители.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,4 @@
-﻿using BeautySalonProject.Models.Enums;
-
-namespace BeautySalonProject.Areas.Admin.ViewModels.Inquiries
+﻿namespace BeautySalonProject.Areas.Admin.ViewModels.Inquiries
 {
     public class InquiryIndexVm
     {

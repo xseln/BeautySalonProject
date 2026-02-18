@@ -1,0 +1,123 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.Employees.AdminEmployeeDetailsVm
+@{
+    ViewData["Title"] = "Детайли";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="sh-admin-page">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+        <div>
+            <h1 class="sh-admin-title mb-1">@Model.FullName</h1>
+            <div class="text-muted">
+                @(string.IsNullOrWhiteSpace(Model.JobTitle) ? "—" : Model.JobTitle)
+                •
+                <span class="fw-semibold">@((Model.IsActive) ? "Активен" : "Неактивен")</span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary"
+               asp-area="Admin" asp-controller="Employees" asp-action="Weekly"
+               asp-route-id="@Model.EmployeeId">
+                График
+            </a>
+
+            <a class="btn btn-outline-secondary"
+               asp-area="Admin" asp-controller="Employees" asp-action="Edit"
+               asp-route-id="@Model.EmployeeId">
+                Редакция
+            </a>
+
+            <a class="btn btn-outline-secondary"
+               asp-area="Admin" asp-controller="Employees" asp-action="Index">
+                ← Назад
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <div class="sh-admin-card p-3">
+                <h5 class="mb-3">Контакти</h5>
+                <div class="mb-2"><span class="text-muted">Телефон:</span> @(Model.Phone ?? "—")</div>
+                <div class="mb-2"><span class="text-muted">Имейл:</span> @(Model.Email ?? "—")</div>
+                <div><span class="text-muted">Длъжност:</span> @(Model.JobTitle ?? "—")</div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="sh-admin-card p-3">
+                <h5 class="mb-3">Услуги (@Model.Services.Count)</h5>
+
+                @if (Model.Services.Count == 0)
+                {
+                        <div class="text-muted">Няма активни услуги.</div>
+                }
+                else
+                {
+                        <div class="d-flex flex-wrap gap-2">
+                        @foreach (var s in Model.Services)
+                        {
+                                    <span class="badge rounded-pill text-bg-light text-dark sh-badge-service">@s</span>
+                        }
+                        </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="sh-admin-card p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Предстоящи записвания</h5>
+
+                    <a class="btn btn-sm btn-outline-secondary"
+                       asp-area="Admin" asp-controller="Appointments" asp-action="Index"
+                       asp-route-employeeId="@Model.EmployeeId">
+                        Виж всички
+                    </a>
+                </div>
+
+                @if (Model.UpcomingAppointments.Count == 0)
+                {
+                        <div class="text-muted">Няма предстоящи записвания.</div>
+                }
+                else
+                {
+                        <div class="table-responsive">
+                            <table class="table mb-0 align-middle">
+                                <thead>
+                                    <tr class="text-muted small">
+                                        <th>Дата</th>
+                                        <th>Час</th>
+                                        <th>Услуга</th>
+                                        <th>Клиент</th>
+                                        <th>Телефон</th>
+                                        <th class="text-end">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var a in Model.UpcomingAppointments)
+                                {
+                                            <tr>
+                                                <td>@a.StartAt.ToString("dd.MM.yyyy")</td>
+                                                <td>@a.StartAt.ToString("HH:mm") – @a.EndAt.ToString("HH:mm")</td>
+                                                <td>@a.ServiceName (@a.VariantName)</td>
+                                                <td>@a.ClientName</td>
+                                                <td>@(a.ClientPhone ?? "—")</td>
+                                                <td class="text-end">
+                                                    <a class="btn btn-sm btn-outline-dark"
+                                                       asp-area="Admin" asp-controller="Appointments" asp-action="Details"
+                                                       asp-route-id="@a.AppointmentId">
+                                                        Детайли
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

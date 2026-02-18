@@ -17,6 +17,10 @@
 
     <div class="sh-admin-card mb-3">
         <form method="get" class="row g-2 align-items-end">
+            @if (Context.Request.Query.ContainsKey("employeeId"))
+            {
+                <input type="hidden" name="employeeId" value="@Context.Request.Query["employeeId"]" />
+            }
             <div class="col-md-4">
                 <label class="form-label">Ден</label>
                 <input type="date" class="form-control"

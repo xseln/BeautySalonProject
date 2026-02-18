@@ -1,4 +1,4 @@
-﻿namespace BeautySalonProject.Models.Enums
+﻿namespace BeautySalonProject.Areas.Admin.ViewModels.Inquiries
 {
     public enum InquiryStatus : byte
     {

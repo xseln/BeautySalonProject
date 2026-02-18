@@ -1,0 +1,86 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.Employees.AdminEmployeeFormVm
+@{
+    ViewData["Title"] = "Нов служител";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="sh-admin-page">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+        <div>
+            <h1 class="sh-admin-title">Нов служител</h1>
+            <div class="text-muted">Добавяне на служител</div>
+        </div>
+
+        <a class="btn btn-outline-secondary"
+           asp-area="Admin" asp-controller="Employees" asp-action="Index">← Назад</a>
+    </div>
+
+    <div class="sh-admin-card">
+        <form asp-area="Admin" asp-controller="Employees" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="FirstName" class="form-label">Име</label>
+                    <input asp-for="FirstName" class="form-control sh-input" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="LastName" class="form-label">Фамилия</label>
+                    <input asp-for="LastName" class="form-control sh-input" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Професия</label>
+                    <select class="form-select" asp-for="JobTitle">
+                        <option value="">— избери —</option>
+                        @foreach (var t in Model.JobTitleOptions)
+                        {
+                                <option value="@t" selected="@(Model.JobTitle == t)">@t</option>
+                        }
+                    </select>
+                    <span asp-validation-for="JobTitle" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Категория</label>
+                    <select class="form-select" asp-for="PrimaryCategoryId" asp-items="Model.CategoryOptions">
+                        <option value="">— избери —</option>
+                    </select>
+                    <span asp-validation-for="PrimaryCategoryId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Phone" class="form-label">Телефон</label>
+                    <input asp-for="Phone" class="form-control sh-input" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control sh-input" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-check">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label">Активен</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn sh-btn-book" type="submit">Запази</button>
+                <a class="btn btn-outline-secondary"
+                   asp-area="Admin" asp-controller="Employees" asp-action="Index">Отказ</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}

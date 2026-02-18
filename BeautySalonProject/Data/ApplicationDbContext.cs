@@ -19,8 +19,8 @@ namespace BeautySalonProject.Data
         public DbSet<Service> Services { get; set; }
         public DbSet<ServiceCategory> ServiceCategories { get; set; }
         public DbSet<ServiceVariant> ServiceVariants { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		public DbSet<EmployeeWorkDay> EmployeeWorkDays { get; set; }
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Appointment>(entity =>
@@ -55,7 +55,7 @@ namespace BeautySalonProject.Data
                     .HasConstraintName("FK_Appointments_Variants");
             });
 
-           
+
             modelBuilder.Entity<Employee>(entity =>
             {
                 entity.Property(e => e.Email).HasMaxLength(255);
@@ -64,6 +64,10 @@ namespace BeautySalonProject.Data
                 entity.Property(e => e.IsActive).HasDefaultValue(true);
                 entity.Property(e => e.LastName).HasMaxLength(60);
                 entity.Property(e => e.Phone).HasMaxLength(30);
+                entity.HasOne(e => e.PrimaryCategory)
+                      .WithMany()
+                      .HasForeignKey(e => e.PrimaryCategoryId)
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<Inquiry>(entity =>
@@ -126,7 +130,21 @@ namespace BeautySalonProject.Data
                     .HasConstraintName("FK_ServiceVariants_Services");
             });
 
-        }
+			modelBuilder.Entity<EmployeeWorkDay>(entity =>
+			{
+				entity.HasKey(x => x.EmployeeWorkDayId);
+
+				entity.HasIndex(x => new { x.EmployeeId, x.Date })
+					  .IsUnique();
+
+				entity.Property(x => x.IsWorking).HasDefaultValue(true);
+
+				entity.HasOne(x => x.Employee)
+					  .WithMany(e => e.WorkDays)
+					  .HasForeignKey(x => x.EmployeeId)
+					  .OnDelete(DeleteBehavior.Cascade);
+			});
+		}
 
     }
 }

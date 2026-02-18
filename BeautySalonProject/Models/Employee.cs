@@ -19,7 +19,13 @@ public partial class Employee
 
     public string? IdentityUserId { get; set; }
 
+    public string? JobTitle { get; set; }
+    public int? PrimaryCategoryId { get; set; }
+    public virtual ServiceCategory? PrimaryCategory { get; set; }
+
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
     public virtual ICollection<Service> Services { get; set; } = new List<Service>();
+	public virtual ICollection<EmployeeWorkDay> WorkDays { get; set; } = new List<EmployeeWorkDay>();
+
 }

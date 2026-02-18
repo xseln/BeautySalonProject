@@ -1,5 +1,4 @@
 ﻿@model BeautySalonProject.Areas.Admin.ViewModels.Inquiries.InquiryIndexVm
-
 @{
     ViewData["Title"] = "Запитвания";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -44,16 +43,16 @@
                             <td>
                                 @switch (item.Status)
                                 {
-                                    case BeautySalonProject.Models.Enums.InquiryStatus.New:
+                                    case InquiryStatus.New:
                                                 <span class="badge rounded-pill text-bg-warning">Ново</span>
                                         break;
-                                    case BeautySalonProject.Models.Enums.InquiryStatus.Approved:
+                                    case InquiryStatus.Approved:
                                                 <span class="badge rounded-pill text-bg-success">Одобрено</span>
                                         break;
-                                    case BeautySalonProject.Models.Enums.InquiryStatus.Rejected:
+                                    case InquiryStatus.Rejected:
                                                 <span class="badge rounded-pill text-bg-danger">Отказано</span>
                                         break;
-                                    case BeautySalonProject.Models.Enums.InquiryStatus.Converted:
+                                    case InquiryStatus.Converted:
                                                 <span class="badge rounded-pill text-bg-primary">Записано</span>
                                         break;
                                 }
@@ -66,7 +65,7 @@
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@item.InquiryId" />
                                         <button class="btn btn-sm btn-outline-success" type="submit"
-                                        @(item.Status != BeautySalonProject.Models.Enums.InquiryStatus.New ? "disabled" : "")>
+                                        @(item.Status != InquiryStatus.New ? "disabled" : "")>
                                             Одобри
                                         </button>
                                     </form>
@@ -75,7 +74,7 @@
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@item.InquiryId" />
                                         <button class="btn btn-sm btn-outline-danger" type="submit"
-                                        @(item.Status != BeautySalonProject.Models.Enums.InquiryStatus.New ? "disabled" : "")>
+                                        @(item.Status != InquiryStatus.New ? "disabled" : "")>
                                             Откажи
                                          </button>
                                     </form>
@@ -84,7 +83,7 @@
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="inquiryId" value="@item.InquiryId" />
                                        <button class="btn btn-sm btn-outline-primary" type="submit"
-                                        @(item.Status != BeautySalonProject.Models.Enums.InquiryStatus.Approved ? "disabled" : "")>
+                                        @(item.Status != InquiryStatus.Approved ? "disabled" : "")>
                                             Запиши час
                                         </button>
                                     </form>

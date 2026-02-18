@@ -1,4 +1,4 @@
-﻿namespace BeautySalonProject.Areas.Admin.ViewModels
+﻿namespace BeautySalonProject.Areas.Admin.ViewModels.Inquiries
 {
     public class InquiryListRowVm
     {

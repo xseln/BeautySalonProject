@@ -4,6 +4,7 @@ using BeautySalonProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeautySalonProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260214195222_AddEmployeeWorkHours")]
+    partial class AddEmployeeWorkHours
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,26 +135,21 @@ namespace BeautySalonProject.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<int?>("PrimaryCategoryId")
-                        .HasColumnType("int");
-
                     b.HasKey("EmployeeId");
-
-                    b.HasIndex("PrimaryCategoryId");
 
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("BeautySalonProject.Models.EmployeeWorkDay", b =>
+            modelBuilder.Entity("BeautySalonProject.Models.EmployeeWorkHour", b =>
                 {
-                    b.Property<int>("EmployeeWorkDayId")
+                    b.Property<int>("EmployeeWorkHourId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeWorkDayId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeWorkHourId"));
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
@@ -167,12 +165,12 @@ namespace BeautySalonProject.Data.Migrations
                     b.Property<TimeOnly?>("StartTime")
                         .HasColumnType("time");
 
-                    b.HasKey("EmployeeWorkDayId");
+                    b.HasKey("EmployeeWorkHourId");
 
-                    b.HasIndex("EmployeeId", "Date")
+                    b.HasIndex("EmployeeId", "DayOfWeek")
                         .IsUnique();
 
-                    b.ToTable("EmployeeWorkDays");
+                    b.ToTable("EmployeeWorkHours");
                 });
 
             modelBuilder.Entity("BeautySalonProject.Models.Inquiry", b =>
@@ -568,20 +566,10 @@ namespace BeautySalonProject.Data.Migrations
                     b.Navigation("Variant");
                 });
 
-            modelBuilder.Entity("BeautySalonProject.Models.Employee", b =>
-                {
-                    b.HasOne("BeautySalonProject.Models.ServiceCategory", "PrimaryCategory")
-                        .WithMany()
-                        .HasForeignKey("PrimaryCategoryId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("PrimaryCategory");
-                });
-
-            modelBuilder.Entity("BeautySalonProject.Models.EmployeeWorkDay", b =>
+            modelBuilder.Entity("BeautySalonProject.Models.EmployeeWorkHour", b =>
                 {
                     b.HasOne("BeautySalonProject.Models.Employee", "Employee")
-                        .WithMany("WorkDays")
+                        .WithMany("WorkHours")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -686,7 +674,7 @@ namespace BeautySalonProject.Data.Migrations
 
                     b.Navigation("Services");
 
-                    b.Navigation("WorkDays");
+                    b.Navigation("WorkHours");
                 });
 
             modelBuilder.Entity("BeautySalonProject.Models.Inquiry", b =>
