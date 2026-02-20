@@ -2,6 +2,7 @@
 using BeautySalonProject.Data;
 using BeautySalonProject.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,13 @@ namespace BeautySalonProject.Areas.Admin.Controllers
     public class EmployeesController : Controller
     {
         private readonly ApplicationDbContext _db;
-
-        public EmployeesController(ApplicationDbContext db)
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public EmployeesController(ApplicationDbContext db, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _db = db;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
         [HttpGet]
         public async Task<IActionResult> Index(bool? active)
@@ -214,6 +218,13 @@ namespace BeautySalonProject.Areas.Admin.Controllers
 
             if (e == null) return NotFound();
 
+            IdentityUser? acc = null;
+
+            if (!string.IsNullOrWhiteSpace(e.IdentityUserId))
+            {
+                acc = await _userManager.FindByIdAsync(e.IdentityUserId);
+            }
+
             var now = DateTime.Now;
 
             var upcoming = await _db.Appointments
@@ -242,6 +253,9 @@ namespace BeautySalonProject.Areas.Admin.Controllers
                 Phone = e.Phone,
                 Email = e.Email,
                 IsActive = e.IsActive,
+                IdentityUserId = e.IdentityUserId,
+                AccountEmail = acc?.Email,
+                AccountUserName = acc?.UserName,
 
                 Services = e.Services
                     .Where(s => s.IsActive)
@@ -412,6 +426,87 @@ namespace BeautySalonProject.Areas.Admin.Controllers
                 id = vm.EmployeeId,
                 week = vm.WeekStart.ToDateTime(new TimeOnly(0, 0))
             });
+        }
+        [HttpGet]
+        public async Task<IActionResult> CreateAccount(int id)
+        {
+            var e = await _db.Employees.FirstOrDefaultAsync(x => x.EmployeeId == id);
+            if (e == null) return NotFound();
+
+            if (!string.IsNullOrWhiteSpace(e.IdentityUserId))
+            {
+                TempData["Err"] = "Този служител вече има акаунт.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var vm = new AdminCreateEmployeeAccountVm
+            {
+                EmployeeId = e.EmployeeId,
+                FullName = e.FirstName + " " + e.LastName,
+                Email = e.Email ?? "",
+                UserName = !string.IsNullOrWhiteSpace(e.Email) ? e.Email! : (e.Phone ?? "")
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAccount(AdminCreateEmployeeAccountVm vm)
+        {
+            if (!ModelState.IsValid) return View(vm);
+
+            var e = await _db.Employees.FirstOrDefaultAsync(x => x.EmployeeId == vm.EmployeeId);
+            if (e == null) return NotFound();
+
+            if (!string.IsNullOrWhiteSpace(e.IdentityUserId))
+            {
+                TempData["Err"] = "Този служител вече има акаунт.";
+                return RedirectToAction(nameof(Details), new { id = e.EmployeeId });
+            }
+
+            if (!await _roleManager.RoleExistsAsync("Staff"))
+                await _roleManager.CreateAsync(new IdentityRole("Staff"));
+
+            if (await _userManager.FindByNameAsync(vm.UserName.Trim()) != null)
+            {
+                ModelState.AddModelError(nameof(vm.UserName), "Това потребителско име вече се използва.");
+                return View(vm);
+            }
+
+            if (await _userManager.FindByEmailAsync(vm.Email.Trim()) != null)
+            {
+                ModelState.AddModelError(nameof(vm.Email), "Този имейл вече се използва.");
+                return View(vm);
+            }
+
+            var user = new IdentityUser
+            {
+                UserName = vm.UserName.Trim(),
+                Email = vm.Email.Trim(),
+                EmailConfirmed = true,
+                PhoneNumber = e.Phone
+            };
+
+            var tempPass = string.IsNullOrWhiteSpace(vm.TempPassword)
+                ? ("Temp@" + Guid.NewGuid().ToString("N").Substring(0, 8))
+                : vm.TempPassword;
+
+            var createRes = await _userManager.CreateAsync(user, tempPass);
+            if (!createRes.Succeeded)
+            {
+                foreach (var err in createRes.Errors)
+                    ModelState.AddModelError("", err.Description);
+                return View(vm);
+            }
+
+            await _userManager.AddToRoleAsync(user,"Staff");
+
+            e.IdentityUserId = user.Id;
+            await _db.SaveChangesAsync();
+
+            TempData["Ok"] = $"Акаунтът е създаден. Временна парола: {tempPass}";
+            return RedirectToAction(nameof(Details), new { id = e.EmployeeId });
         }
 
     }

@@ -1,0 +1,100 @@
+﻿@using BeautySalonProject.Models
+@model BeautySalonProject.Areas.Staff.ViewModels.Dashboard.StaffDashboardVm
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Staff/Views/Shared/_StaffLayout.cshtml";
+}
+
+<div class="sh-page-hero mb-4 text-center">
+    <div class="sh-brand-wrapper">
+        <div class="sh-slogan-wrap justify-content-center">
+            <span class="line"></span>
+            <span class="sh-slogan">SH Beauty Studio</span>
+            <span class="line"></span>
+        </div>
+        <h1 class="sh-hero-title mt-2">Служителски панел</h1>
+        <div class="sh-hero-desc text-muted">Бърз преглед на твоите часове</div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="sh-admin-card">
+            <div class="sh-admin-card-title">Днешни часове</div>
+            <div class="sh-admin-card-value">@Model.TodayCount</div>
+            <div class="sh-admin-card-sub">записвания за днес</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="sh-admin-card">
+            <div class="sh-admin-card-title">Предстоящи</div>
+            <div class="sh-admin-card-value">@Model.UpcomingCount</div>
+            <div class="sh-admin-card-sub">от сега нататък</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="sh-admin-card">
+            <div class="sh-admin-card-title">Приключени днес</div>
+            <div class="sh-admin-card-value">@Model.CompletedTodayCount</div>
+            <div class="sh-admin-card-sub">изпълнени посещения</div>
+        </div>
+    </div>
+</div>
+
+<div class="sh-admin-card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="mb-0">Днешен график</h4>
+    </div>
+
+    @if (Model.TodaySchedule.Count == 0)
+    {
+            <div class="text-muted">Няма записвания за днес.</div>
+    }
+    else
+    {
+            <div class="table-responsive">
+                <table class="table mb-0 align-middle">
+                    <thead>
+                        <tr class="text-muted small">
+                            <th>Час</th>
+                            <th>Услуга</th>
+                            <th>Клиент</th>
+                            <th>Телефон</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var a in Model.TodaySchedule)
+                    {
+                            <tr>
+                                <td>@a.StartAt.ToString("HH:mm") – @a.EndAt.ToString("HH:mm")</td>
+                                <td>@a.ServiceName (@a.VariantName)</td>
+                                <td>@a.ClientName</td>
+                                <td>@(a.ClientPhone ?? "—")</td>
+                                <td>
+                                @if (a.Status == (byte)AppointmentStatus.Booked)
+                                {
+                                            <span class="sh-badge sh-badge-warn">Записан</span>
+                                }
+                                else if (a.Status == (byte)AppointmentStatus.Completed)
+                                {
+                                            <span class="sh-badge sh-badge-ok">Приключен</span>
+                                }
+                                else if (a.Status == (byte)AppointmentStatus.Cancelled)
+                                {
+                                            <span class="sh-badge sh-badge-bad">Отказан</span>
+                                }
+                                else
+                                {
+                                            <span class="text-muted">@a.Status</span>
+                                }
+                                </td>
+                            </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+    }
+</div>

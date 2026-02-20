@@ -27,7 +27,14 @@
                asp-route-id="@Model.EmployeeId">
                 Редакция
             </a>
-
+            @if (string.IsNullOrWhiteSpace(Model.IdentityUserId))
+            {
+                    <a class="btn btn-success"
+                       asp-area="Admin" asp-controller="Employees" asp-action="CreateAccount"
+                       asp-route-id="@Model.EmployeeId">
+                        + Акаунт
+                    </a>
+            }
             <a class="btn btn-outline-secondary"
                asp-area="Admin" asp-controller="Employees" asp-action="Index">
                 ← Назад
@@ -44,7 +51,38 @@
                 <div><span class="text-muted">Длъжност:</span> @(Model.JobTitle ?? "—")</div>
             </div>
         </div>
+           <div class="col-lg-4">
+            <div class="sh-admin-card p-3">
+                <h5 class="mb-3">Акаунт</h5>
 
+                @if (string.IsNullOrWhiteSpace(Model.IdentityUserId))
+                {
+                        <div class="text-muted mb-3">Няма създаден акаунт за вход.</div>
+
+                        <a class="btn btn-success w-100"
+                           asp-area="Admin"
+                           asp-controller="Employees"
+                           asp-action="CreateAccount"
+                           asp-route-id="@Model.EmployeeId">
+                            Създай акаунт за служителя
+                        </a>
+                }
+                else
+                {
+                        <div class="mb-2">
+                            <span class="text-muted">UserName:</span>
+                            <span class="fw-semibold">@((Model.AccountUserName ?? "—"))</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="text-muted">Email:</span>
+                            <span class="fw-semibold">@((Model.AccountEmail ?? "—"))</span>
+                        </div>
+
+                        <span class="badge text-bg-success">Има акаунт (Employee)</span>
+                }
+            </div>
+        </div>
         <div class="col-lg-8">
             <div class="sh-admin-card p-3">
                 <h5 class="mb-3">Услуги (@Model.Services.Count)</h5>

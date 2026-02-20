@@ -8,6 +8,9 @@
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public bool IsActive { get; set; }
+        public string? IdentityUserId { get; set; }
+        public string? AccountEmail { get; set; }
+        public string? AccountUserName { get; set; }
 
         public List<string> Services { get; set; } = new();
 

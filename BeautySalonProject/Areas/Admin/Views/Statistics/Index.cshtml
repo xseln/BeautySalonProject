@@ -1,0 +1,180 @@
+﻿@model BeautySalonProject.Areas.Admin.ViewModels.Statistics.AdminStatisticsVm
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Статистики";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    var labelsJson = JsonSerializer.Serialize(Model.Labels);
+    var visitsJson = JsonSerializer.Serialize(Model.VisitsPerDay);
+    var revenueJson = JsonSerializer.Serialize(Model.RevenuePerDay);
+}
+
+<div class="sh-admin-page">
+    <div class="sh-admin-head mb-4">
+        <h1 class="sh-admin-title">Статистики</h1>
+        <div class="sh-admin-subtitle">Посещения, клиенти, приходи и топ услуги</div>
+    </div>
+
+    <div class="sh-admin-card mb-3">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">От</label>
+                <input type="date" class="form-control" name="from" value="@Model.From.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">До</label>
+                <input type="date" class="form-control" name="to" value="@Model.To.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button class="btn sh-btn-book" type="submit">Покажи</button>
+                <a class="btn btn-outline-secondary"
+                   asp-area="Admin" asp-controller="Statistics" asp-action="Index">
+                    Последни 30 дни
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="sh-admin-card h-100">
+                <div class="text-muted small">Клиенти (уникални, приключени)</div>
+                <div style="font-size:32px; font-weight:700;">@Model.UniqueClientsCompleted</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="sh-admin-card h-100">
+                <div class="text-muted small">Посещения (приключени)</div>
+                <div style="font-size:32px; font-weight:700;">@Model.VisitsCompleted</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="sh-admin-card h-100">
+                <div class="text-muted small">Приход (приключени)</div>
+                <div style="font-size:32px; font-weight:700;">@Model.RevenueCompleted.ToString("0.00") €</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-lg-7">
+            <div class="sh-admin-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="fw-semibold">Приход по дни</div>
+                    <div class="text-muted small">@Model.From:dd.MM.yyyy – @Model.To:dd.MM.yyyy</div>
+                </div>
+                <div style="height:340px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="sh-admin-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="fw-semibold">Посещения по дни</div>
+                    <div class="text-muted small">@Model.From:dd.MM.yyyy – @Model.To:dd.MM.yyyy</div>
+                </div>
+                <div style="height:340px;">
+                    <canvas id="visitsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sh-admin-card">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="fw-semibold">Най-често избирани услуги (Top 10)</div>
+            <div class="text-muted small">само приключени посещения</div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr class="text-muted small">
+                        <th>Услуга</th>
+                        <th class="text-end">Брой</th>
+                        <th class="text-end">Приход</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.TopServices.Count == 0)
+                    {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">Няма данни за периода.</td>
+                            </tr>
+                    }
+                    else
+                    {
+                        foreach (var s in Model.TopServices)
+                        {
+                                    <tr>
+                                        <td class="fw-semibold">@s.ServiceName</td>
+                                        <td class="text-end">@s.Count</td>
+                                                <td class="text-end">@s.Revenue.ToString("0.00") €</td>
+                                    </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const labels = @Html.Raw(labelsJson);
+            const visits = @Html.Raw(visitsJson);
+            const revenue = @Html.Raw(revenueJson);
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                },
+                scales: {
+                    x: { grid: { display: false } }
+                }
+            };
+
+            new Chart(document.getElementById('revenueChart'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Приход (лв.)',
+                        data: revenue
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        y: { ticks: { callback: (v) => v + " лв." } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('visitsChart'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Посещения',
+                        data: visits
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        </script>
+}

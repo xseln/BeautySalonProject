@@ -6,7 +6,7 @@ namespace BeautySalonProject.Data.Seed
     {
         public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
-            string[] roles = { "Admin", "Employee", "Client" };
+            string[] roles = { "Admin", "Staff", "Client" };
 
             foreach (var role in roles)
             {

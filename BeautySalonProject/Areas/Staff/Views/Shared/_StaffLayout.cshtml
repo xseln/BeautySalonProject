@@ -1,0 +1,69 @@
+﻿<!doctype html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Staff | SH Beauty</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+
+<div class="d-flex" style="min-height:100vh;">
+    <!-- Sidebar (като Admin) -->
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            Staff Panel<br />
+            <small>SH Beauty</small>
+        </div>
+
+        <div class="admin-nav">
+            <a asp-area="Staff" asp-controller="Dashboard" asp-action="Index">
+                📊 Dashboard
+            </a>
+
+            <a asp-area="Staff" asp-controller="Appointments" asp-action="Index">
+                📅 Записвания
+            </a>
+
+            <a asp-area="Staff" asp-controller="Appointments" asp-action="Create">
+                ➕ Нов запис
+            </a>
+
+            <a asp-area="Staff" asp-controller="Clients" asp-action="Index">
+                👤 История на клиент
+            </a>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,.12);" />
+
+        <div class="admin-nav">
+            <a asp-area="" asp-controller="Home" asp-action="Index">
+                ⬅️ Към сайта
+            </a>
+
+            <form asp-area="" asp-page="/Account/Logout" method="post" class="mt-2">
+                <button class="btn btn-outline-light w-100" type="submit">Изход</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="admin-content p-4">
+            @if (TempData["Ok"] != null)
+            {
+                <div class="alert alert-success">@TempData["Ok"]</div>
+            }
+            @if (TempData["Err"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Err"]</div>
+            }
+
+            @RenderBody()
+    </main>
+</div>
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

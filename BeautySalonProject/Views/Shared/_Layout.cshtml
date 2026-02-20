@@ -90,6 +90,17 @@
             </a>
         </li>
                     }
+                    @if (User.IsInRole("Staff"))
+                    {
+                         <li class="nav-item">
+                <a class="nav-link sh-menu-link"
+                   asp-area="Staff"
+                   asp-controller="Dashboard"
+                   asp-action="Index">
+                    Slujitel
+                </a>
+            </li>
+                    }
 
     </ul>
 
