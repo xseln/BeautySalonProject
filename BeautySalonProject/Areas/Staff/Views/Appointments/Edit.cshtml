@@ -1,0 +1,37 @@
+﻿@model BeautySalonProject.Areas.Staff.ViewModels.Appointments.StaffAppointmentFormVm
+@{
+    ViewData["Title"] = "Редакция";
+}
+
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div>
+        <h1 class="sh-section-title mb-1">Редакция на запис</h1>
+        <div class="sh-muted">Промени час, услуга или данни за клиента</div>
+    </div>
+
+    <a class="btn sh-btn-ghost"
+       asp-area="Staff" asp-controller="Appointments" asp-action="Index"
+       asp-route-date="@Model.StartAt.ToString("yyyy-MM-dd")">
+        ← Назад
+    </a>
+</div>
+
+<form method="post" class="d-grid gap-3">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="AppointmentId" />
+
+    <partial name="_Form" model="Model" />
+
+    <div class="d-flex gap-2 justify-content-end">
+        <a class="btn btn-outline-secondary"
+           asp-area="Staff" asp-controller="Appointments" asp-action="Details"
+           asp-route-id="@Model.AppointmentId">
+            Откажи
+        </a>
+        <button class="btn sh-btn-book sh-pill" type="submit">Запази</button>
+    </div>
+</form>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}

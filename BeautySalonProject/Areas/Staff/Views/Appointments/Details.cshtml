@@ -1,0 +1,119 @@
+﻿@using BeautySalonProject.Models
+@model BeautySalonProject.Areas.Staff.ViewModels.Appointments.StaffAppointmentDetailsVm
+@{
+    ViewData["Title"] = "Детайли";
+}
+
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div>
+        <h1 class="sh-section-title mb-1">Детайли за запис</h1>
+        <div class="sh-muted">
+            @Model.StartAt.ToString("dd.MM.yyyy") • @Model.StartAt.ToString("HH:mm") – @Model.EndAt.ToString("HH:mm")
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a class="btn sh-btn-ghost"
+           asp-area="Staff" asp-controller="Appointments" asp-action="Index"
+           asp-route-date="@Model.StartAt.ToString("yyyy-MM-dd")">
+            ← Назад към графика
+        </a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="sh-admin-card">
+            <h5 class="mb-3">Клиент</h5>
+
+            <div class="mb-2"><span class="sh-muted">Тип:</span> @(Model.IsGuest ? "Гост" : "Профил")</div>
+            <div class="mb-2"><span class="sh-muted">Име:</span> @Model.ClientName</div>
+            <div class="mb-2"><span class="sh-muted">Телефон:</span> @(Model.ClientPhone ?? "—")</div>
+            <div><span class="sh-muted">Имейл:</span> @(Model.ClientEmail ?? "—")</div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="sh-admin-card">
+            <h5 class="mb-3">Услуга</h5>
+
+            <div class="mb-2"><span class="sh-muted">Услуга:</span> <span class="fw-semibold">@Model.ServiceName</span></div>
+            <div class="mb-2"><span class="sh-muted">Вариант:</span> @Model.VariantName</div>
+
+            <div class="mb-3">
+                <span class="sh-muted">Статус:</span>
+                @if (Model.Status == (byte)AppointmentStatus.Booked)
+                {
+                        <span class="sh-badge sh-badge-warn ms-2">Записан</span>
+                }
+                else if (Model.Status == (byte)AppointmentStatus.Completed)
+                {
+                        <span class="sh-badge sh-badge-ok ms-2">Приключен</span>
+                }
+                else if (Model.Status == (byte)AppointmentStatus.Cancelled)
+                {
+                        <span class="sh-badge sh-badge-bad ms-2">Отказан</span>
+                }
+                else
+                {
+                        <span class="text-muted ms-2">@Model.Status</span>
+                }
+            </div>
+
+            <div class="mb-3">
+                <div class="sh-muted mb-1">Бележка</div>
+                <div class="sh-note-box">@(!string.IsNullOrWhiteSpace(Model.Notes) ? Model.Notes : "—")</div>
+            </div>
+
+       <div class="d-flex flex-wrap gap-2">
+                @if (Model.Status == (byte)AppointmentStatus.Booked)
+                {
+            <a class="btn btn-outline-dark"
+               asp-area="Staff" asp-controller="Appointments" asp-action="Edit"
+               asp-route-id="@Model.AppointmentId">
+                ✎ Редакция
+            </a>
+
+            <form asp-area="Staff" asp-controller="Appointments" asp-action="Cancel" method="post">
+                        @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.AppointmentId" />
+                <button type="submit" class="btn btn-outline-danger">
+                    ✖ Откажи
+                </button>
+            </form>
+                }
+
+                @if (Model.Status != (byte)AppointmentStatus.Cancelled)
+                {
+            <form asp-area="Staff" asp-controller="Appointments" asp-action="Complete" method="post"
+                  class="d-flex gap-2 align-items-center">
+                        @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.AppointmentId" />
+
+                <div style="min-width: 180px;">
+                    <input class="form-control sh-input"
+                           type="number" step="0.01" min="0"
+                           name="finalPrice"
+                           value="@Model.FinalPrice.ToString("0.00")"
+                           placeholder="Цена" />
+                </div>
+
+                <button type="submit" class="btn btn-outline-success">
+                    ✔ Приключи
+                </button>
+            </form>
+                }
+         </div>
+
+            <hr class="my-3" />
+
+            <div class="sh-muted small">
+                Създаден: @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                @if (Model.UpdatedAt.HasValue)
+                {
+                        <span> • Обновен: @Model.UpdatedAt.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>

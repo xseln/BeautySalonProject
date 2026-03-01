@@ -729,4 +729,215 @@ body {
     font-weight: 600;
 }
 
+/* Staff schedule tweaks */
+.sh-toolbar {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(200,161,90,.25);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+    backdrop-filter: blur(8px);
+}
 
+.sh-table thead th {
+    border-bottom: 1px solid rgba(200,161,90,.25);
+}
+
+.sh-table tbody tr:hover {
+    background: rgba(245,239,232,.65);
+}
+
+.sh-muted {
+    color: rgba(58,44,32,.75);
+}
+
+.sh-pill {
+    border-radius: 999px;
+    padding: 10px 14px;
+}
+
+.sh-btn-ghost {
+    background: rgba(255,255,255,.7);
+    border: 1px solid rgba(200,161,90,.35);
+    border-radius: 14px;
+}
+
+    .sh-btn-ghost:hover {
+        background: #fff;
+    }
+.sh-auth .dropdown-toggle.sh-btn-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(200,161,90,.25);
+    background: rgba(255,255,255,.70);
+}
+
+    .sh-auth .dropdown-toggle.sh-btn-link:hover {
+        background: rgba(255,255,255,.90);
+        color: #c8a15a;
+    }
+
+.sh-auth .dropdown-menu {
+    border-radius: 16px;
+    border: 1px solid rgba(200,161,90,.25);
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 18px 45px rgba(0,0,0,.14);
+    padding: 8px;
+    min-width: 220px;
+}
+
+.sh-auth .dropdown-item {
+    border-radius: 12px;
+    padding: 10px 12px;
+    color: #3a2c20;
+}
+
+    .sh-auth .dropdown-item:hover {
+        background: rgba(245,239,232,.85);
+        color: #c8a15a;
+    }
+
+.sh-auth .dropdown-divider {
+    border-top-color: rgba(0,0,0,.08);
+}
+.sh-muted.small {
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: .7;
+    margin-bottom: 6px;
+}
+/* Client booking page */
+.sh-chip-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+@media (min-width: 992px) {
+    .sh-chip-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.sh-chip {
+    display: block;
+    padding: 12px 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(200,161,90,.25);
+    background: rgba(255,255,255,.70);
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.btn-check:checked + .sh-chip {
+    border-color: rgba(200,161,90,.75);
+    box-shadow: 0 12px 30px rgba(0,0,0,.10);
+    transform: translateY(-1px);
+}
+
+.sh-chip:hover {
+    background: rgba(255,255,255,.88);
+}
+
+.sh-ig {
+    border-radius: 14px 0 0 14px;
+    border: 1px solid rgba(58,44,32,.18);
+    background: rgba(255,255,255,.72);
+}
+
+.sh-slots-box {
+    background: rgba(255,255,255,.55);
+    border: 1px solid rgba(200,161,90,.20);
+    border-radius: 18px;
+    padding: 14px;
+}
+
+.sh-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+@media (max-width: 576px) {
+    .sh-slot-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.sh-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+    border-radius: 14px;
+    border: 1px solid rgba(200,161,90,.25);
+    background: rgba(255,255,255,.75);
+    cursor: pointer;
+    font-weight: 600;
+    color: #3a2c20;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.btn-check:checked + .sh-slot {
+    border-color: rgba(200,161,90,.75);
+    box-shadow: 0 12px 30px rgba(0,0,0,.12);
+    transform: translateY(-1px);
+}
+
+.sh-slot:hover {
+    background: rgba(255,255,255,.92);
+}
+
+.sh-slot.is-disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.sh-empty {
+    color: rgba(58,44,32,.75);
+    padding: 8px 2px;
+}
+
+.sh-summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(200,161,90,.25);
+}
+
+    .sh-summary-row:last-child {
+        border-bottom: none;
+    }
+
+.sh-sticky {
+    position: sticky;
+    top: 110px;
+}
+.sh-chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.sh-chip {
+    cursor: pointer;
+    user-select: none;
+    background: rgba(255,255,255,.75);
+    border: 1px solid rgba(200,161,90,.30);
+    border-radius: 14px;
+    padding: 10px 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.06);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.btn-check:checked + .sh-chip {
+    border-color: rgba(200,161,90,.85);
+    box-shadow: 0 14px 32px rgba(180,138,74,.18);
+    transform: translateY(-1px);
+}

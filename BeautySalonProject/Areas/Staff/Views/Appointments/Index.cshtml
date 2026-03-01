@@ -1,0 +1,145 @@
+﻿@using BeautySalonProject.Models
+@model BeautySalonProject.Areas.Staff.ViewModels.Appointments.StaffAppointmentsIndexVm
+@{
+    ViewData["Title"] = "Моят график";
+}
+
+<!-- Hero -->
+<div class="sh-page-hero mb-4 text-center">
+    <div class="sh-brand-wrapper">
+        <div class="sh-slogan-wrap justify-content-center">
+            <span class="line"></span>
+            <span class="sh-slogan">SH Beauty Studio</span>
+            <span class="line"></span>
+        </div>
+        <h1 class="sh-hero-title mt-2">Моят график</h1>
+        <div class="sh-hero-desc sh-muted">
+            Преглед и търсене на записванията за избраната дата
+        </div>
+    </div>
+</div>
+
+<!-- Toolbar / Filters -->
+<div class="sh-toolbar mb-4">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-lg-3 col-md-4">
+            <label class="form-label sh-muted">Дата</label>
+            <input class="form-control sh-input" type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <div class="col-lg-3 col-md-4">
+            <label class="form-label sh-muted">Статус</label>
+            <select class="form-select sh-input" name="status">
+                <option value="">Всички</option>
+                <option value="@((byte)AppointmentStatus.Booked)" selected="@(Model.Status == (byte)AppointmentStatus.Booked)">Записан</option>
+                <option value="@((byte)AppointmentStatus.Completed)" selected="@(Model.Status == (byte)AppointmentStatus.Completed)">Приключен</option>
+                <option value="@((byte)AppointmentStatus.Cancelled)" selected="@(Model.Status == (byte)AppointmentStatus.Cancelled)">Отказан</option>
+            </select>
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label class="form-label sh-muted">Търси (име/телефон)</label>
+            <input class="form-control sh-input" name="q" value="@Model.Q" placeholder="напр. Мария / 0888..." />
+        </div>
+
+        <div class="col-lg-2 d-grid">
+            <button class="btn sh-btn-book sh-pill" type="submit">Покажи</button>
+        </div>
+    </form>
+
+    <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+        <div class="sh-muted">
+            Дата: <strong>@Model.Date.ToString("dd.MM.yyyy")</strong>
+            • Общо: <strong>@Model.Rows.Count</strong>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a class="btn sh-btn-ghost"
+               asp-area="Staff" asp-controller="Appointments" asp-action="Create">
+                ➕ Нов запис
+            </a>
+            <a class="btn sh-btn-ghost"
+               asp-area="Staff" asp-controller="Dashboard" asp-action="Index">
+                ← Към Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="sh-admin-card">
+    @if (Model.Rows.Count == 0)
+    {
+            <div class="text-center py-4">
+                <div class="fs-5 fw-bold mb-1">Няма записи</div>
+                <div class="sh-muted mb-3">Пробвай друга дата или махни филтрите.</div>
+
+                <a class="btn sh-btn-book sh-pill"
+                   asp-area="Staff" asp-controller="Appointments" asp-action="Create">
+                    ➕ Създай нов запис
+                </a>
+            </div>
+    }
+    else
+    {
+            <div class="table-responsive">
+                <table class="table mb-0 align-middle sh-table">
+                    <thead>
+                        <tr class="text-muted small">
+                            <th style="width:150px;">Час</th>
+                            <th>Услуга</th>
+                            <th style="width:220px;">Клиент</th>
+                            <th style="width:160px;">Телефон</th>
+                            <th style="width:140px;">Статус</th>
+                            <th class="text-end" style="width:140px;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var r in Model.Rows)
+                    {
+                            <tr>
+                                <td class="fw-semibold">
+                                @r.StartAt.ToString("HH:mm") – @r.EndAt.ToString("HH:mm")
+                                </td>
+
+                                <td>
+                                    <div class="fw-semibold">@r.ServiceName</div>
+                                    <div class="sh-muted small">@r.VariantName</div>
+                                </td>
+
+                                <td>@r.ClientName</td>
+                                <td>@(r.ClientPhone ?? "—")</td>
+
+                                <td>
+                                @if (r.Status == (byte)AppointmentStatus.Booked)
+                                {
+                                            <span class="sh-badge sh-badge-warn">Записан</span>
+                                }
+                                else if (r.Status == (byte)AppointmentStatus.Completed)
+                                {
+                                            <span class="sh-badge sh-badge-ok">Приключен</span>
+                                }
+                                else if (r.Status == (byte)AppointmentStatus.Cancelled)
+                                {
+                                            <span class="sh-badge sh-badge-bad">Отказан</span>
+                                }
+                                else
+                                {
+                                            <span class="text-muted">@r.Status</span>
+                                }
+                                </td>
+
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-dark"
+                                       asp-area="Staff" asp-controller="Appointments" asp-action="Details"
+                                       asp-route-id="@r.AppointmentId">
+                                        Детайли
+                                    </a>
+                                </td>
+                            </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+    }
+</div>

@@ -1,0 +1,87 @@
+﻿@model BeautySalonProject.Areas.Client.ViewModels.Appointments.ClientMyAppointmentsVm
+@{
+    ViewData["Title"] = "Моите часове";
+}
+
+<div class="container my-4">
+    <div class="sh-page-hero mb-4 text-center">
+        <h1 class="sh-hero-title">Моите часове</h1>
+        <div class="sh-hero-desc sh-muted">Предстоящи и минали посещения</div>
+    </div>
+
+    @if (TempData["Ok"] != null)
+    {
+            <div class="alert alert-success">@TempData["Ok"]</div>
+    }
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="sh-card p-3">
+                <h5 class="mb-3">Предстоящи</h5>
+
+                @if (!Model.Upcoming.Any())
+                {
+                        <div class="sh-muted">Нямаш предстоящи часове.</div>
+                }
+                else
+                {
+                    foreach (var a in Model.Upcoming)
+                    {
+                                <div class="border rounded p-3 mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <div><strong>@a.ServiceName</strong> (@a.VariantName)</div>
+                                            <div class="sh-muted">@a.EmployeeName</div>
+                                            <div class="sh-muted">@a.StartAt:dd.MM.yyyy HH:mm – @a.EndAt:HH:mm</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div><strong>@a.FinalPrice.ToString("0.##") €</strong></div>
+                                            <div class="sh-muted">@a.StatusText</div>
+                                        </div>
+                                    </div>
+
+                            @if (a.CanCancel)
+                            {
+                                            <form asp-action="Cancel" method="post" class="mt-2">
+                                    @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@a.AppointmentId" />
+                                                <button class="btn btn-outline-danger btn-sm">Откажи</button>
+                                            </form>
+                            }
+                                </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="sh-card p-3">
+                <h5 class="mb-3">История</h5>
+
+                @if (!Model.Past.Any())
+                {
+                        <div class="sh-muted">Все още нямаш минали посещения.</div>
+                }
+                else
+                {
+                    foreach (var a in Model.Past)
+                    {
+                                <div class="border rounded p-3 mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <div><strong>@a.ServiceName</strong> (@a.VariantName)</div>
+                                            <div class="sh-muted">@a.EmployeeName</div>
+                                            <div class="sh-muted">@a.StartAt:dd.MM.yyyy HH:mm – @a.EndAt:HH:mm</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div><strong>@a.FinalPrice.ToString("0.##") €</strong></div>
+                                            <div class="sh-muted">@a.StatusText</div>
+                                        </div>
+                                    </div>
+                                </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

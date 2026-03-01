@@ -1,0 +1,115 @@
+﻿@model BeautySalonProject.Areas.Staff.ViewModels.Clients.StaffClientHistoryVm
+@{
+    ViewData["Title"] = "История на клиенти";
+}
+
+<div class="sh-page-hero mb-4 text-center">
+    <div class="sh-brand-wrapper">
+        <div class="sh-slogan-wrap justify-content-center">
+            <span class="line"></span>
+            <span class="sh-slogan">SH Beauty Studio</span>
+            <span class="line"></span>
+        </div>
+        <h1 class="sh-hero-title mt-2">История на клиенти</h1>
+        <div class="sh-hero-desc sh-muted">
+            Търси по име, телефон или имейл и виж приключените посещения
+        </div>
+    </div>
+</div>
+
+<div class="sh-toolbar mb-4">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-lg-4">
+            <label class="form-label sh-muted">Име</label>
+            <input class="form-control sh-input" name="nameQ" value="@Model.NameQ" placeholder="напр. Мария / Ivan" />
+        </div>
+
+        <div class="col-lg-3">
+            <label class="form-label sh-muted">Телефон</label>
+            <input class="form-control sh-input" name="phoneQ" value="@Model.PhoneQ" placeholder="напр. 0888..." />
+        </div>
+
+        <div class="col-lg-3">
+            <label class="form-label sh-muted">Имейл</label>
+            <input class="form-control sh-input" name="emailQ" value="@Model.EmailQ" placeholder="напр. gmail.com" />
+        </div>
+
+        <div class="col-lg-2 d-grid">
+            <button class="btn sh-btn-book sh-pill" type="submit">Търси</button>
+        </div>
+    </form>
+
+    <div class="sh-muted mt-3">
+        Показани: <strong>@Model.Rows.Count</strong>
+        @if (!string.IsNullOrWhiteSpace(Model.NameQ) || !string.IsNullOrWhiteSpace(Model.PhoneQ) || !string.IsNullOrWhiteSpace(Model.EmailQ))
+        {
+                <span> • Филтър:</span>
+            @if (!string.IsNullOrWhiteSpace(Model.NameQ))
+            {
+                <span class="ms-1"><strong>Име:</strong> @Model.NameQ</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.PhoneQ))
+            {
+                <span class="ms-2"><strong>Тел:</strong> @Model.PhoneQ</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.EmailQ))
+            {
+                <span class="ms-2"><strong>Email:</strong> @Model.EmailQ</span>
+            }
+        }
+    </div>
+</div>
+
+<div class="sh-admin-card">
+    @if (Model.Rows.Count == 0)
+    {
+            <div class="text-center py-4">
+                <div class="fs-5 fw-bold mb-1">Няма намерени посещения</div>
+                <div class="sh-muted">Пробвай с други филтри.</div>
+            </div>
+    }
+    else
+    {
+            <div class="table-responsive">
+                <table class="table mb-0 align-middle sh-table">
+                    <thead>
+                        <tr class="text-muted small">
+                            <th style="width:170px;">Дата</th>
+                            <th>Клиент</th>
+                            <th style="width:170px;">Телефон</th>
+                            <th style="width:240px;">Имейл</th>
+                            <th>Услуга</th>
+                            <th style="width:120px;" class="text-end">Цена</th>
+                            <th style="width:140px;" class="text-end">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var r in Model.Rows)
+                    {
+                            <tr>
+                                <td class="fw-semibold">@r.StartAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>
+                                    <div class="fw-semibold">@r.ClientName</div>
+                                    <div class="sh-muted small">@((r.IsGuest) ? "Гост" : "Профил")</div>
+                                </td>
+                                <td>@(r.ClientPhone ?? "—")</td>
+                                <td>@(r.ClientEmail ?? "—")</td>
+                                <td>
+                                    <div class="fw-semibold">@r.ServiceName</div>
+                                    <div class="sh-muted small">@r.VariantName</div>
+                                </td>
+                                <td class="text-end fw-semibold">@r.FinalPrice.ToString("0.00") лв</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-dark"
+                                       asp-area="Staff" asp-controller="Appointments" asp-action="Details"
+                                       asp-route-id="@r.AppointmentId">
+                                        Детайли
+                                    </a>
+                                </td>
+                            </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+    }
+</div>

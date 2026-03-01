@@ -1,0 +1,151 @@
+﻿@model BeautySalonProject.Areas.Client.ViewModels.Appointments.ClientBookVm
+@{
+    ViewData["Title"] = "Запази своя час";
+}
+
+<div class="sh-page-hero mb-4 text-center">
+    <div class="sh-brand-wrapper">
+        <div class="sh-slogan-wrap justify-content-center">
+            <span class="line"></span>
+            <span class="sh-slogan">SH Beauty Studio</span>
+            <span class="line"></span>
+        </div>
+        <h1 class="sh-hero-title mt-2">Запази своя час</h1>
+        <div class="sh-hero-desc sh-muted">
+            Избери служител, дата и удобен час.
+        </div>
+    </div>
+</div>
+<div id="bookFormRoot" data-variant-id="@Model.VariantId">
+<form asp-action="Book" method="post" class="row g-4"
+      id="bookFormRoot" data-variant-id="@Model.VariantId">    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="VariantId" />
+    <input type="hidden" asp-for="DurationMinutes" />
+    <input type="hidden" asp-for="Price" />
+
+    <!-- Left: main form -->
+    <div class="col-lg-8">
+        <div class="sh-form-card">
+            <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
+                <div>
+                    <div class="sh-section-title mb-1">@Model.VariantTitle</div>
+                    <div class="sh-muted">
+                        <i class="fa-regular fa-clock me-1"></i> Продължителност: <strong>@Model.DurationMinutes</strong> минути
+                        <span class="mx-2">•</span>
+                        <i class="fa-solid fa-tag me-1"></i> Цена: <strong>@Model.Price.ToString("0.00")</strong> €
+                    </div>
+                </div>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <!-- Employees -->
+                <div class="col-12">
+                    <label class="form-label sh-muted">Избери служител</label>
+
+                    <div class="sh-chip-grid">
+                        @foreach (var emp in Model.Employees)
+                        {
+                            var id = $"emp_{emp.EmployeeId}";
+                                <input class="btn-check"
+                                       type="radio"
+                                       name="EmployeeId"
+                                       id="@id"
+                                       value="@emp.EmployeeId"
+                            @(emp.EmployeeId == Model.EmployeeId ? "checked" : "")
+                                       data-role="emp" />
+
+                                <label class="sh-chip" for="@id">
+                                    <div class="fw-semibold">@emp.Name</div>
+                                @if (!string.IsNullOrWhiteSpace(emp.JobTitle))
+                                {
+                                            <div class="small sh-muted">@emp.JobTitle</div>
+                                }
+                                </label>
+                        }
+                    </div>
+
+                    <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                </div>
+
+                <!-- Date -->
+                <div class="col-md-6">
+                    <label class="form-label sh-muted">Избери дата</label>
+                    <div class="input-group">
+                        <span class="input-group-text sh-ig"><i class="fa-regular fa-calendar"></i></span>
+                        <input asp-for="Date" type="date" class="form-control sh-input" id="dateInput" />
+                    </div>
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+
+                <!-- Slots -->
+                <div class="col-12">
+                    <label class="form-label sh-muted">Избери час</label>
+
+                   <div id="slotsBox" class="sh-slots-box">
+                       <div class="sh-muted">Избери служител и дата, за да заредим наличните часове…</div>
+                   </div>
+
+                    <span asp-validation-for="StartTime" class="text-danger"></span>
+                </div>
+
+                <!-- Notes -->
+                <div class="col-12">
+                    <label class="form-label sh-muted">Бележки (по желание)</label>
+                    <textarea asp-for="Notes"
+                              class="form-control sh-input"
+                              rows="3"
+                              placeholder="Например: алергии, предпочитания..."></textarea>
+                    <span asp-validation-for="Notes" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: summary -->
+    <div class="col-lg-4">
+        <div class="sh-form-card sh-sticky">
+            <div class="sh-section-title">Обобщение</div>
+
+            <div class="sh-summary-row">
+                <span class="sh-muted">Услуга</span>
+                <span class="fw-semibold text-end">@Model.VariantTitle</span>
+            </div>
+
+            <div class="sh-summary-row">
+                <span class="sh-muted">Продължителност</span>
+                <span class="fw-semibold">@Model.DurationMinutes мин</span>
+            </div>
+
+            <div class="sh-summary-row">
+                <span class="sh-muted">Цена</span>
+                <span class="fw-semibold">@Model.Price.ToString("0.00") €</span>
+            </div>
+
+            <div class="sh-summary-row">
+                <span class="sh-muted">Дата</span>
+                <span class="fw-semibold" id="sumDate">—</span>
+            </div>
+
+            <div class="sh-summary-row">
+                <span class="sh-muted">Час</span>
+                <span class="fw-semibold" id="sumTime">—</span>
+            </div>
+
+            <button type="submit" class="btn sh-btn-book w-100 mt-3">
+                <i class="fa-solid fa-check me-2"></i> Потвърди запазването
+            </button>
+
+            <div class="sh-muted small mt-3">
+                * Можеш да отмениш запазен час до 2 часа преди началото.
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+@section Scripts {
+           <partial name="_ValidationScriptsPartial" />
+        <script src="~/js/client-booking.js" asp-append-version="true"></script>
+}

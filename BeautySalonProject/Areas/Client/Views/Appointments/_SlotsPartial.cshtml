@@ -1,0 +1,28 @@
+﻿@model List<BeautySalonProject.Areas.Client.ViewModels.Appointments.TimeSlotVm>
+
+@if (Model != null && Model.Any())
+{
+        <div class="sh-slot-grid">
+        @foreach (var slot in Model)
+        {
+            var id = $"slot_{slot.Value}";
+                    <input type="radio"
+                           class="btn-check"
+                           name="StartTime"
+                           value="@slot.Value"
+                           id="@id"
+            @(slot.IsAvailable ? "" : "disabled") />
+
+                    <label class="sh-slot @(slot.IsAvailable ? "" : "is-disabled")" for="@id">
+                @slot.Label
+                    </label>
+        }
+        </div>
+}
+else
+{
+        <div class="sh-empty">
+            <i class="fa-regular fa-calendar-xmark me-2"></i>
+            Няма налични часове за тази дата.
+        </div>
+}

@@ -1,0 +1,58 @@
+﻿@model BeautySalonProject.Areas.Staff.ViewModels.Appointments.StaffAppointmentFormVm
+@using BeautySalonProject.Models
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="sh-admin-card">
+            <h5 class="mb-3">Запис</h5>
+
+            <div class="mb-3">
+                <label class="form-label sh-muted">Услуга / Вариант</label>
+                <select class="form-select sh-input" asp-for="VariantId" asp-items="Model.VariantOptions"></select>
+                <div class="form-text sh-muted">Продължителност и цена са по варианта.</div>
+                <span asp-validation-for="VariantId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label sh-muted">Начало</label>
+                <input class="form-control sh-input" asp-for="StartAt" type="datetime-local"
+                       value="@Model.StartAt.ToString("yyyy-MM-ddTHH:mm")" />
+                <span asp-validation-for="StartAt" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label sh-muted">Бележка</label>
+                <textarea class="form-control sh-input" asp-for="Notes" rows="3" placeholder="по желание..."></textarea>
+            </div>
+
+            <div class="sh-note-box">
+                <div class="fw-semibold mb-1">Инфо за варианта</div>
+                <div class="sh-muted">Продължителност: <strong>@Model.DurationMinutes</strong> мин</div>
+                <div class="sh-muted">Цена: <strong>@Model.VariantPrice.ToString("0.00")</strong>€</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="sh-admin-card">
+            <h5 class="mb-3">Клиент (гост)</h5>
+
+            <div class="mb-3">
+                <label class="form-label sh-muted">Име и фамилия</label>
+                <input class="form-control sh-input" asp-for="GuestFullName" />
+                <span asp-validation-for="GuestFullName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label sh-muted">Телефон</label>
+                <input class="form-control sh-input" asp-for="GuestPhone" />
+                <span asp-validation-for="GuestPhone" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label sh-muted">Имейл (по желание)</label>
+                <input class="form-control sh-input" asp-for="GuestEmail" />
+            </div>
+        </div>
+    </div>
+</div>

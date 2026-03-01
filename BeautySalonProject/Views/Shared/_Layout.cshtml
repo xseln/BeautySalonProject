@@ -97,26 +97,51 @@
                    asp-area="Staff"
                    asp-controller="Dashboard"
                    asp-action="Index">
-                    Slujitel
+                    Служителски панел
                 </a>
             </li>
+                    }
+                    @if (User.IsInRole("Client"))
+                    {
+        <li class="nav-item mt-3">
+            <div class="sh-muted small px-3">Клиент</div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link sh-menu-link"
+               asp-area="Client"
+               asp-controller="Appointments"
+               asp-action="My">
+                <i class="fa-regular fa-calendar-check me-2"></i>
+                Моите часове
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link sh-menu-link"
+               asp-controller="Services"
+               asp-action="Index">
+                <i class="fa-solid fa-spa me-2"></i>
+                Запази нов час
+            </a>
+        </li>
                     }
 
     </ul>
 
     <div class="mt-auto pt-3 border-top">
         <div class="d-grid">
-                        @if (User.Identity?.IsAuthenticated ?? false)
+                        @if (User.IsInRole("Client"))
                         {
-                    <a class="btn sh-btn-book" asp-area="Client" asp-controller="Appointments" asp-action="Create">
-                        Запази своя час
-                    </a>
+        <a class="btn sh-btn-book" asp-controller="Services" asp-action="Index">
+            Запази своя час
+        </a>
                         }
                         else
                         {
-                    <a class="btn sh-btn-book" asp-controller="Inquiries" asp-action="Create">
-                        Запази своя час
-                    </a>
+        <a class="btn sh-btn-book" asp-controller="Inquiries" asp-action="Create">
+            Запази своя час
+        </a>
                         }
         </div>
     </div>
