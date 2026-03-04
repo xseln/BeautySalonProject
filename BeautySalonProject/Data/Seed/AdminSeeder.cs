@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BeautySalonProject.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
 namespace BeautySalonProject.Data.Seed
@@ -6,8 +7,8 @@ namespace BeautySalonProject.Data.Seed
     public static class AdminSeeder
     {
         public static async Task SeedAdminAsync(
-            UserManager<IdentityUser> userManager,
-            IConfiguration config)
+        UserManager<ApplicationUser> userManager,
+        IConfiguration config)
         {
             var email = config["AdminSeed:Email"];
             var password = config["AdminSeed:Password"];
@@ -18,7 +19,7 @@ namespace BeautySalonProject.Data.Seed
             var user = await userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                user = new IdentityUser
+                user = new ApplicationUser
                 {
                     UserName = email,
                     Email = email,

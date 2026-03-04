@@ -1,10 +1,16 @@
-﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+﻿@using BeautySalonProject.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
+        var me = await UserManager.GetUserAsync(User);
+        var displayName = me == null
+            ? (User.Identity?.Name ?? "Профил")
+            : $"{me.FirstName} {me.LastName}".Trim();
+
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle sh-btn-link"
                href="#"
@@ -12,7 +18,7 @@
                data-bs-toggle="dropdown"
                aria-expanded="false">
                 <i class="fa-regular fa-user me-1"></i>
-                @User.Identity?.Name
+                @displayName
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end">

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BeautySalonProject.Data
 {
     public class ApplicationDbContext
-         : IdentityDbContext<IdentityUser, IdentityRole, string>
+        : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

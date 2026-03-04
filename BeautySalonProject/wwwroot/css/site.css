@@ -941,3 +941,29 @@ body {
     box-shadow: 0 14px 32px rgba(180,138,74,.18);
     transform: translateY(-1px);
 }
+.sh-slots-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.sh-slot {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-size: 14px;
+}
+
+    .sh-slot:hover {
+        background: #f8f8f8;
+        border-color: #999;
+    }
+
+    .sh-slot.active {
+        background: #111;
+        color: #fff;
+        border-color: #111;
+    }

@@ -40,4 +40,5 @@ public partial class Appointment
     public virtual Inquiry? Inquiry { get; set; }
 
     public virtual ServiceVariant Variant { get; set; } = null!;
+    public ApplicationUser? ClientUser { get; set; }
 }

@@ -85,7 +85,7 @@
         try {
             const url = new URL("/Client/Appointments/Slots", window.location.origin);
             url.searchParams.set("employeeId", employeeId);
-            url.searchParams.set("date", date);       // yyyy-mm-dd
+            url.searchParams.set("date", date);
             url.searchParams.set("variantId", variantId);
 
             const resp = await fetch(url.toString(), {

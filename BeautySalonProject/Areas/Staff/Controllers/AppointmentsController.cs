@@ -14,9 +14,9 @@ namespace BeautySalonProject.Areas.Staff.Controllers
     public class AppointmentsController : Controller
     {
         private readonly ApplicationDbContext _db;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AppointmentsController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
+        public AppointmentsController(ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
             _db = db;
             _userManager = userManager;
@@ -70,7 +70,7 @@ namespace BeautySalonProject.Areas.Staff.Controllers
                 .ToList();
 
             var usersById = clientIds.Count == 0
-                ? new Dictionary<string, IdentityUser>()
+                ? new Dictionary<string, ApplicationUser>()
                 : await _db.Users
                     .AsNoTracking()
                     .Where(u => clientIds.Contains(u.Id))

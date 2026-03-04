@@ -14,17 +14,18 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using BeautySalonProject.Models;
 
 namespace BeautySalonProject.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, UserManager<IdentityUser> userManager)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, UserManager<ApplicationUser> userManager)
         {
             _signInManager = signInManager;
             _logger = logger;
@@ -122,7 +123,6 @@ namespace BeautySalonProject.Areas.Identity.Pages.Account
                         return RedirectToAction("Index", "Home");
                     }
 
-                    // Ако няма никаква роля – автоматично става Client
                     if (!await _userManager.IsInRoleAsync(user, "Admin") &&
                         !await _userManager.IsInRoleAsync(user, "Staff") &&
                         !await _userManager.IsInRoleAsync(user, "Client"))
@@ -130,7 +130,6 @@ namespace BeautySalonProject.Areas.Identity.Pages.Account
                         await _userManager.AddToRoleAsync(user, "Client");
                     }
 
-                    // Redirect според роля
                     if (await _userManager.IsInRoleAsync(user, "Admin"))
                     {
                         return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
