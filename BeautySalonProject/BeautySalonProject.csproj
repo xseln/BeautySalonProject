@@ -8,7 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\js\slider.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\images\reception.jpg" />
     <_ContentIncludedByDefault Remove="wwwroot\images\salon9.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\slider.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\slider.js" />
   </ItemGroup>
 
   <ItemGroup>

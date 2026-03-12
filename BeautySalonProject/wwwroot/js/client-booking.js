@@ -47,14 +47,14 @@
 
         // Radio buttons grid
         const html = `
-          <div class="sh-slots-grid">
+          <div class="sh-slot-grid">
             ${slots.map(s => {
             const safeId = "slot_" + String(s.value).replace(":", "");
             return `
-                  <input class="btn-check" type="radio" name="StartTime" id="${safeId}" value="${s.value}">
-                  <label class="sh-slot" for="${safeId}">${s.label}</label>
-                `;
-        }).join("")}
+            <input class="btn-check" type="radio" name="StartTime" id="${safeId}" value="${s.value}">
+            <label class="sh-slot" for="${safeId}">${s.label}</label>
+           `;
+          }).join("")}
           </div>
         `;
 

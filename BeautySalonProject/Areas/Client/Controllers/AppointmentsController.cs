@@ -160,8 +160,8 @@ namespace BeautySalonProject.Areas.Client.Controllers
                     AppointmentStatus.Booked => "Запазен",
                     AppointmentStatus.Completed => "Приключен",
                     AppointmentStatus.Cancelled => "Отказан",
-                    _ => "Неизвестен"
-                };
+					_ => "Отказан"
+				};
 
                 r.CanCancel = r.Status == (byte)AppointmentStatus.Booked && r.StartAt > now.AddHours(2);
             }
@@ -196,34 +196,6 @@ namespace BeautySalonProject.Areas.Client.Controllers
 
             TempData["Ok"] = "Часът е отказан.";
             return RedirectToAction(nameof(My));
-        }
-
-        private async Task Refill(ClientAppointmentCreateVm vm)
-        {
-            var variant = await _db.ServiceVariants
-                .Include(v => v.Service)
-                .ThenInclude(s => s.Employee)
-                .FirstOrDefaultAsync(v => v.VariantId == vm.VariantId);
-
-            if (variant != null)
-            {
-                vm.VariantTitle = $"{variant.Service.Name} – {variant.VariantName}";
-                vm.DurationMinutes = variant.DurationMinutes;
-                vm.Price = variant.Price;
-            }
-
-            vm.Employees = await _db.Employees
-                .Where(e => e.IsActive)
-                .Select(e => new EmployeeOptionVm
-                {
-                    EmployeeId = e.EmployeeId,
-                    Name = e.FirstName + " " + e.LastName,
-                    JobTitle = e.JobTitle
-                })
-                .ToListAsync();
-
-            if (variant != null && vm.EmployeeId != 0)
-                vm.Slots = await BuildSlots(vm.EmployeeId, vm.Date.Date, variant.DurationMinutes);
         }
         private async Task FillBookUi(ClientBookVm vm)
         {
@@ -342,6 +314,91 @@ namespace BeautySalonProject.Areas.Client.Controllers
                 && startAt < a.EndAt && endAt > a.StartAt);
 
             return !overlaps;
+        }
+        public async Task<IActionResult> Edit(int id)
+        {
+            var a = await _db.Appointments
+                .Include(x => x.Employee)
+                .Include(x => x.Variant)
+                .FirstOrDefaultAsync(x => x.AppointmentId == id);
+
+            if (a == null) return NotFound();
+
+            if (DateTime.Now >= a.StartAt.AddHours(-2))
+            {
+                TempData["Err"] = "Часът може да се редактира само до 2 часа предварително.";
+                return RedirectToAction(nameof(My));
+            }
+
+            var employees = await _db.Employees
+                .Where(e => e.IsActive)
+                .Select(e => new EditAppointmentVm.EmployeeOption
+                {
+                    Id = e.EmployeeId,
+                    Name = e.FirstName + " " + e.LastName
+                })
+                .ToListAsync();
+
+            var vm = new EditAppointmentVm
+            {
+                AppointmentId = a.AppointmentId,
+                EmployeeId = a.EmployeeId,
+                Date = a.StartAt.Date,
+                VariantId = a.VariantId,
+                Employees = employees
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, int employeeId, DateTime date, string slot)
+        {
+            var a = await _db.Appointments.FirstOrDefaultAsync(x => x.AppointmentId == id);
+
+            if (a == null) return NotFound();
+
+            if (DateTime.Now >= a.StartAt.AddHours(-2))
+            {
+                TempData["Err"] = "Редакцията вече не е възможна.";
+                return RedirectToAction(nameof(My));
+            }
+
+            var time = TimeSpan.Parse(slot);
+
+            a.EmployeeId = employeeId;
+            a.StartAt = date.Date.Add(time);
+            a.EndAt = a.StartAt.AddMinutes(60);
+
+            a.UpdatedAt = DateTime.Now;
+
+            await _db.SaveChangesAsync();
+
+            TempData["Ok"] = "Часът беше променен.";
+
+            return RedirectToAction(nameof(My));
+        }
+        public async Task<IActionResult> GetSlots(DateTime date, int employeeId)
+        {
+            var taken = await _db.Appointments
+                .Where(a => a.EmployeeId == employeeId &&
+                            a.StartAt.Date == date.Date &&
+                            a.Status != 3)
+                .Select(a => a.StartAt.TimeOfDay)
+                .ToListAsync();
+
+            var slots = new List<string>();
+
+            for (int h = 9; h < 18; h++)
+            {
+                var t = new TimeSpan(h, 0, 0);
+
+                if (!taken.Contains(t))
+                    slots.Add(t.ToString(@"hh\:mm"));
+            }
+
+            return Json(slots);
         }
     }
 }

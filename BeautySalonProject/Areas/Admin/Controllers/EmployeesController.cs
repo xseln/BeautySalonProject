@@ -287,7 +287,7 @@ namespace BeautySalonProject.Areas.Admin.Controllers
                 .ToListAsync();
 
             string[] dayNames = { "Неделя", "Понеделник", "Вторник", "Сряда", "Четвъртък", "Петък", "Събота" };
-            TimeOnly weekdayStart = new TimeOnly(10, 0);
+            TimeOnly weekdayStart = new TimeOnly(9, 0);
             TimeOnly weekdayEnd = new TimeOnly(18, 0);
             TimeOnly satStart = new TimeOnly(11, 0);
             TimeOnly satEnd = new TimeOnly(17, 0);
@@ -347,7 +347,7 @@ namespace BeautySalonProject.Areas.Admin.Controllers
 
             vm.EmployeeName = employee.FirstName + " " + employee.LastName;
 
-            TimeOnly weekdayStart = new TimeOnly(10, 0);
+            TimeOnly weekdayStart = new TimeOnly(9, 0);
             TimeOnly weekdayEnd = new TimeOnly(18, 0);
             TimeOnly satStart = new TimeOnly(11, 0);
             TimeOnly satEnd = new TimeOnly(17, 0);

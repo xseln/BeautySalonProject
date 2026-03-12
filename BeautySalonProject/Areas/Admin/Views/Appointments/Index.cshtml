@@ -71,9 +71,9 @@
                                     <div class="text-muted small">@a.VariantName</div>
                                 </td>
                                 <td>@a.EmployeeName</td>
-                                <td class="text-muted small">@a.ClientUserId</td>
+                                    <td class="text-muted small">@a.ClientName</td>
                                 <td>
-                                    <span class="badge @Badge(a.Status)">@Text(a.Status)</span>
+                                        <span class="sh-status @Badge(a.Status)">@Text(a.Status)</span>
                                 </td>
                                 <td class="text-end">
                                     <div class="d-inline-flex gap-2">
@@ -119,12 +119,14 @@
         _ => "—"
     };
 
-    string Badge(byte s) => s switch
+    string Badge(byte status)
     {
-        0 => "text-bg-warning",
-        1 => "text-bg-success",
-        2 => "text-bg-primary",
-        3 => "text-bg-danger",
-        _ => "text-bg-secondary"
-    };
+        return status switch
+        {
+            0 => "sh-status sh-status-booked",
+            1 => "sh-status sh-status-completed",
+            2 => "sh-status sh-status-cancelled",
+            _ => "sh-status"
+        };
+    }
 }

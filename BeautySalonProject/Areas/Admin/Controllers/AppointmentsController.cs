@@ -28,10 +28,11 @@ namespace BeautySalonProject.Areas.Admin.Controllers
             var day = date?.Date;
 
             var q = _db.Appointments
-                .Include(a => a.Employee)
-                .Include(a => a.Variant)
-                    .ThenInclude(v => v.Service)
-                .AsQueryable();
+               .Include(a => a.Employee)
+               .Include(a => a.Variant)
+               .ThenInclude(v => v.Service)
+               .Include(a => a.ClientUser)
+               .AsQueryable();
 
             if (employeeId.HasValue)
                 q = q.Where(a => a.EmployeeId == employeeId.Value);
@@ -68,7 +69,11 @@ namespace BeautySalonProject.Areas.Admin.Controllers
                     EmployeeName = a.Employee.FirstName + " " + a.Employee.LastName,
                     ServiceName = a.Variant.Service.Name,
                     VariantName = a.Variant.VariantName,
-                    ClientUserId = a.ClientUserId!,
+
+                    ClientName = a.ClientUser != null
+                    ? a.ClientUser.FirstName + " " + a.ClientUser.LastName
+                    : a.GuestFullName ?? "Гост клиент",
+
                     Status = a.Status
                 })
                 .ToListAsync();

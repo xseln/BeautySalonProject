@@ -15,138 +15,94 @@
 </head>
 
 <body>
-    <header class="sh-topbar">
-    <nav class="navbar navbar-expand">
-        <div class="container-fluid position-relative">
+   <header class="sh-topbar">
 
-            <!-- Left: Burger + Logo -->
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn sh-burger"
-                        type="button"
-                        data-bs-toggle="offcanvas"
-                        data-bs-target="#mainMenu"
-                        aria-controls="mainMenu"
-                        aria-label="Menu">
-                    ☰
-                </button>
+<nav class="navbar navbar-expand-lg sh-navbar">
 
-                <a class="d-flex align-items-center gap-2 text-decoration-none"
-                   asp-controller="Home" asp-action="Index">
-                    <img class="sh-logo" src="~/images/logo.png" alt="Logo" />
-                </a>
-            </div>
+<div class="container align-items-center">
 
-           <!-- CSalon Name  -->
-<div class="position-absolute start-50 translate-middle-x text-center">
-    <div class="sh-brand-wrapper">
-        <a class="sh-brand d-block" asp-controller="Home" asp-action="Index">
-            SH Beauty Studio
-        </a>
+<!-- LOGO -->
 
-        <div class="sh-slogan-wrap">
-            <span class="line"></span>
-            <span class="sh-slogan">Chic &amp; Unique</span>
-            <span class="line"></span>
-        </div>
-    </div>
+<a class="navbar-brand d-flex align-items-center gap-2 sh-brand"
+   asp-controller="Home"
+   asp-action="Index">
+
+<img src="~/images/logo.png" class="sh-logo"/>
+
+<div class="sh-brand-text">
+
+<span class="sh-brand-title">
+SH Beauty Studio
+</span>
+
+<div class="sh-slogan-wrap">
+
+<span class="line"></span>
+
+<span class="sh-slogan">
+Chic & Unique
+</span>
+
+<span class="line"></span>
+
 </div>
 
-
-            <!-- Right: Register / Login -->
-            <div class="ms-auto sh-auth">
-                <partial name="_LoginPartial" />
-            </div>
-        </div>
-    </nav>
-
-    <!-- Offcanvas menu -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="mainMenu" aria-labelledby="mainMenuLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="mainMenuLabel">Меню</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-
-      <div class="offcanvas-body sh-menu">
-
-    <ul class="nav flex-column gap-2 flex-grow-1">
-
-        <li class="nav-item">
-            <a class="nav-link sh-menu-link" asp-controller="Home" asp-action="About">За нас</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link sh-menu-link" asp-controller="Services" asp-action="Index">Нашите услуги</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link sh-menu-link" asp-controller="Home" asp-action="Contacts">Контакти</a>
-        </li>
-                    @if (User.IsInRole("Admin"))
-                    {
-        <li class="nav-item">
-            <a class="nav-link sh-menu-link"
-               asp-area="Admin"
-               asp-controller="Dashboard"
-               asp-action="Index">
-                Админ панел
-            </a>
-        </li>
-                    }
-                    @if (User.IsInRole("Staff"))
-                    {
-                         <li class="nav-item">
-                <a class="nav-link sh-menu-link"
-                   asp-area="Staff"
-                   asp-controller="Dashboard"
-                   asp-action="Index">
-                    Служителски панел
-                </a>
-            </li>
-                    }
-                    @if (User.IsInRole("Client"))
-                    {
-        <li class="nav-item mt-3">
-            <div class="sh-muted small px-3">Клиент</div>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link sh-menu-link"
-               asp-area="Client"
-               asp-controller="Appointments"
-               asp-action="My">
-                <i class="fa-regular fa-calendar-check me-2"></i>
-                Моите часове
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link sh-menu-link"
-               asp-controller="Services"
-               asp-action="Index">
-                <i class="fa-solid fa-spa me-2"></i>
-                Запази нов час
-            </a>
-        </li>
-                    }
-
-    </ul>
-
-    <div class="mt-auto pt-3 border-top">
-        <div class="d-grid">
-                        @if (User.IsInRole("Client"))
-                        {
-        <a class="btn sh-btn-book" asp-controller="Services" asp-action="Index">
-            Запази своя час
-        </a>
-                        }
-                        else
-                        {
-        <a class="btn sh-btn-book" asp-controller="Inquiries" asp-action="Create">
-            Запази своя час
-        </a>
-                        }
-        </div>
-    </div>
 </div>
-    </div>
+
+</a>
+
+
+
+<!-- MENU -->
+
+<ul class="navbar-nav mx-auto gap-4 sh-nav">
+
+<li class="nav-item">
+<a class="nav-link sh-nav-link"
+   asp-controller="Home"
+   asp-action="Index">
+Начало
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link sh-nav-link"
+   asp-controller="Services"
+   asp-action="Index">
+Услуги
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link sh-nav-link"
+   asp-controller="Home"
+   asp-action="About">
+За нас
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link sh-nav-link"
+   asp-controller="Home"
+   asp-action="Contacts">
+Контакти
+</a>
+</li>
+
+</ul>
+
+
+
+<!-- LOGIN -->
+
+<div class="sh-auth">
+<partial name="_LoginPartial"/>
+</div>
+
+</div>
+
+</nav>
+
 </header>
 
     <div class="container">
@@ -211,7 +167,9 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    
+    <script src="~/js/animations.js"></script>
+    <script src="~/js/slider.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
     
 

@@ -1,0 +1,72 @@
+﻿@model BeautySalonProject.Areas.Client.ViewModels.Profile.ClientProfileVm
+
+@{
+    ViewData["Title"] = "Моят профил";
+}
+
+<div class="sh-page-hero text-center mb-4">
+
+<h1 class="sh-hero-title">
+Моят профил
+</h1>
+
+<div class="sh-hero-desc">
+Редакция на лична информация
+</div>
+
+</div>
+
+<div class="sh-form-card">
+
+<form method="post">
+
+<div class="row g-3">
+
+<div class="col-md-6">
+
+<label class="form-label">Име</label>
+
+<input asp-for="FirstName"
+class="form-control sh-input"/>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">Фамилия</label>
+
+<input asp-for="LastName"
+class="form-control sh-input"/>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">Телефон</label>
+
+<input asp-for="PhoneNumber"
+class="form-control sh-input"/>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">Email</label>
+
+<input asp-for="Email"
+class="form-control sh-input"
+disabled/>
+
+</div>
+
+</div>
+
+<button class="btn sh-btn-book mt-3">
+
+Запази промените
+
+</button>
+
+</form>
+
+</div>

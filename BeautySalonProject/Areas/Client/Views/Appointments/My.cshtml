@@ -1,87 +1,183 @@
 ﻿@model BeautySalonProject.Areas.Client.ViewModels.Appointments.ClientMyAppointmentsVm
+
 @{
     ViewData["Title"] = "Моите часове";
 }
 
-<div class="container my-4">
-    <div class="sh-page-hero mb-4 text-center">
-        <h1 class="sh-hero-title">Моите часове</h1>
-        <div class="sh-hero-desc sh-muted">Предстоящи и минали посещения</div>
+<div class="sh-page-hero mb-4 text-center">
+    <div class="sh-brand-wrapper">
+        <div class="sh-slogan-wrap justify-content-center">
+            <span class="line"></span>
+            <span class="sh-slogan">SH Beauty Studio</span>
+            <span class="line"></span>
+        </div>
+
+        <h1 class="sh-hero-title mt-2">Моите часове</h1>
+
+        <div class="sh-hero-desc sh-muted">
+            Преглед на предстоящи и минали посещения
+        </div>
+    </div>
+</div>
+
+
+<!-- Upcoming -->
+<div class="sh-form-card mb-4">
+
+    <div class="sh-section-title">
+        <i class="fa-regular fa-calendar-check me-2"></i>
+        Предстоящи часове
     </div>
 
-    @if (TempData["Ok"] != null)
+    @if (!Model.Upcoming.Any())
     {
-            <div class="alert alert-success">@TempData["Ok"]</div>
+        <div class="sh-empty">Нямате предстоящи часове.</div>
     }
+    else
+    {
+    <div class="row g-3">
 
-    <div class="row g-4">
-        <div class="col-lg-6">
-            <div class="sh-card p-3">
-                <h5 class="mb-3">Предстоящи</h5>
+            @foreach (var a in Model.Upcoming)
+            {
+        <div class="col-md-6 col-lg-4">
 
-                @if (!Model.Upcoming.Any())
-                {
-                        <div class="sh-muted">Нямаш предстоящи часове.</div>
-                }
-                else
-                {
-                    foreach (var a in Model.Upcoming)
-                    {
-                                <div class="border rounded p-3 mb-2">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <div><strong>@a.ServiceName</strong> (@a.VariantName)</div>
-                                            <div class="sh-muted">@a.EmployeeName</div>
-                                            <div class="sh-muted">@a.StartAt:dd.MM.yyyy HH:mm – @a.EndAt:HH:mm</div>
-                                        </div>
-                                        <div class="text-end">
-                                            <div><strong>@a.FinalPrice.ToString("0.##") €</strong></div>
-                                            <div class="sh-muted">@a.StatusText</div>
-                                        </div>
-                                    </div>
+        <div class="sh-appointment-card">
+
+        <div class="sh-appointment-service">
+                            @a.ServiceName – @a.VariantName
+        </div>
+
+        <div class="sh-appointment-info">
+
+        <div>
+        <i class="fa-regular fa-user me-2"></i>
+                                @a.EmployeeName
+        </div>
+
+        <div>
+        <i class="fa-regular fa-calendar me-2"></i>
+                                @a.StartAt.ToString("dd.MM.yyyy")
+        </div>
+
+        <div>
+        <i class="fa-regular fa-clock me-2"></i>
+                                @a.StartAt.ToString("HH:mm")
+        </div>
+
+        <div>
+        <i class="fa-solid fa-tag me-2"></i>
+                                @a.FinalPrice.ToString("0.00") €
+        </div>
+
+        </div>
+
+        <div class="sh-appointment-actions">
+
+        <span class="sh-status sh-status-booked">
+                                @a.StatusText
+        </span>
 
                             @if (a.CanCancel)
                             {
-                                            <form asp-action="Cancel" method="post" class="mt-2">
-                                    @Html.AntiForgeryToken()
-                                                <input type="hidden" name="id" value="@a.AppointmentId" />
-                                                <button class="btn btn-outline-danger btn-sm">Откажи</button>
-                                            </form>
+                <div class="d-flex gap-2">
+
+                    <a class="btn sh-btn-edit btn-sm"
+                       asp-area="Client"
+                       asp-controller="Appointments"
+                       asp-action="Edit"
+                       asp-route-id="@a.AppointmentId">
+                        Редактирай
+                    </a>
+                                    @if (DateTime.Now >= a.StartAt.AddHours(-2))
+                                    {
+                    <span class="text-muted small">
+                        Редакцията е затворена
+                    </span>
+                                    }
+                    <form asp-action="Cancel"
+                          asp-controller="Appointments"
+                          asp-area="Client"
+                          method="post">
+
+                        <input type="hidden" name="id" value="@a.AppointmentId" />
+
+                        <button class="btn sh-btn-cancel btn-sm">
+                            Откажи
+                        </button>
+
+                    </form>
+
+                </div>
                             }
-                                </div>
-                    }
-                }
-            </div>
+
         </div>
 
-        <div class="col-lg-6">
-            <div class="sh-card p-3">
-                <h5 class="mb-3">История</h5>
-
-                @if (!Model.Past.Any())
-                {
-                        <div class="sh-muted">Все още нямаш минали посещения.</div>
-                }
-                else
-                {
-                    foreach (var a in Model.Past)
-                    {
-                                <div class="border rounded p-3 mb-2">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <div><strong>@a.ServiceName</strong> (@a.VariantName)</div>
-                                            <div class="sh-muted">@a.EmployeeName</div>
-                                            <div class="sh-muted">@a.StartAt:dd.MM.yyyy HH:mm – @a.EndAt:HH:mm</div>
-                                        </div>
-                                        <div class="text-end">
-                                            <div><strong>@a.FinalPrice.ToString("0.##") €</strong></div>
-                                            <div class="sh-muted">@a.StatusText</div>
-                                        </div>
-                                    </div>
-                                </div>
-                    }
-                }
-            </div>
         </div>
+
+        </div>
+            }
+
     </div>
+    }
+
+</div>
+
+
+<!-- Past -->
+<div class="sh-form-card">
+
+<div class="sh-section-title">
+<i class="fa-regular fa-clock me-2"></i>
+Минали посещения
+</div>
+
+    @if (!Model.Past.Any())
+    {
+    <div class="sh-empty">Нямате минали посещения.</div>
+    }
+    else
+    {
+    <div class="row g-3">
+
+            @foreach (var a in Model.Past)
+            {
+        <div class="col-md-6 col-lg-4">
+
+        <div class="sh-appointment-card sh-past">
+
+        <div class="sh-appointment-service">
+                            @a.ServiceName – @a.VariantName
+        </div>
+
+        <div class="sh-appointment-info">
+
+        <div>
+        <i class="fa-regular fa-user me-2"></i>
+                                @a.EmployeeName
+        </div>
+
+        <div>
+        <i class="fa-regular fa-calendar me-2"></i>
+                                @a.StartAt.ToString("dd.MM.yyyy HH:mm")
+        </div>
+
+        <div>
+        <i class="fa-solid fa-tag me-2"></i>
+                                @a.FinalPrice.ToString("0.00") €
+        </div>
+
+        </div>
+
+        <span class="sh-status sh-status-completed">
+                            @a.StatusText
+        </span>
+
+        </div>
+
+        </div>
+            }
+
+    </div>
+    }
+
 </div>

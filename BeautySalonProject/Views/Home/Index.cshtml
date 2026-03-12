@@ -2,101 +2,261 @@
     ViewData["Title"] = "Начало";
 }
 
-<div class="container my-4 hero-grid">
-    <div class="row g-3">
+<!-- HERO SLIDER -->
 
-        <div class="col-md-4">
-            <div class="img-card">
-                <img src="~/images/salon1.jpg" alt="Салон 1" />
-                <div class="overlay">
-                    <h5>Място за красота и релакс</h5>
-                    <p>Професионална грижа и уютна атмосфера</p>
-                </div>
-            </div>
-        </div>
+<section class="hero-slider">
 
-        <div class="col-md-4">
-            <div class="img-card">
-                <img src="~/images/salon3.jpg" alt="Салон 3" />
-                <div class="overlay">
-                     <h5>Перфектен педикюр</h5>
-                    <p>Нежна грижа за твоите крака</p>
-                    
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="img-card">
-                <img src="~/images/salon2.jpg" alt="Салон 3" />
-                <div class="overlay">
-                   <h5>Топлина, стил и уют</h5>
-                    <p>Твоята минута спокойствие</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="img-card">
-                <img src="~/images/salon4.jpg" alt="Салон 4" />
-                <div class="overlay">
-                    <h5>Време за теб</h5>
-                    <p>Грижа, която усещаш</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="img-card">
-                <img src="~/images/salon5.jpg" alt="Салон 5" />
-                <div class="overlay">
-                    <h5>Здрава, сияйна кожа</h5>
-                    <p>Красота във всеки детайл</p>
-                </div>
-            </div>
-        </div>
-
-<div class="col-md-4">
-    <a href="/Gallery/manicure" class="text-decoration-none">
-        <div class="img-card">
-            <img src="~/images/salon6.jpg" alt="Маникюр" />
-            <div class="overlay">
-                <h5>Съвършен маникюр</h5>
-                <p>Красота до върха на пръстите</p>
-            </div>
-        </div>
-    </a>
+<div class="slide active" style="background-image:url('/images/salon1.jpg')">
+<div class="hero-content">
+<h1>Луксозна грижа за твоята красота</h1>
+<p>Професионални процедури и уютна атмосфера</p>
+<a asp-controller="Services" asp-action="Index" class="btn sh-btn-book">Запази час</a>
+</div>
 </div>
 
-<div class="col-md-4">
-    <div class="img-card">
-        <img src="~/images/salon7.jpg" alt="Салон 7" />
-        <div class="overlay">
-            <h5>Лазерна епилация</h5>
-            <p>Гладки резултати</p>
-        </div>
-    </div>
+<div class="slide" style="background-image:url('/images/salon2.jpg')">
+<div class="hero-content">
+<h1>Съвършенство във всеки детайл</h1>
+<p>Маникюр, козметика и лазерна епилация</p>
+<a asp-controller="Services" asp-action="Index" class="btn sh-btn-book">Разгледай услуги</a>
+</div>
 </div>
 
-<div class="col-md-4">
-    <div class="img-card">
-        <img src="~/images/salon8.jpg" alt="Салон 8" />
-        <div class="overlay">
-            <h5>Професионален грим</h5>
-            <p>За всеки повод</p>
-        </div>
-    </div>
+<div class="slide" style="background-image:url('/images/reception.jpg')">
+<div class="hero-content">
+<h1>Твоето място за релакс</h1>
+<p>Погрижи се за себе си още днес</p>
+<a asp-controller="Services" asp-action="Index" class="btn sh-btn-book">Запази час</a>
+</div>
 </div>
 
-<div class="col-md-4">
-    <div class="img-card">
-        <img src="~/images/salon9.jpg" alt="Салон 8" />
-        <div class="overlay">
-            <h5>Вежди и мигли с характер</h5>
-            <p>Изразителен и нежен поглед</p>
-        </div>
-    </div>
-</div>
-    </div>
+</section>
+
+
+<!-- SERVICES -->
+<section class="services-elegant container fade-up">
+
+<h2 class="services-title text-center mb-5">
+Нашите услуги
+</h2>
+
+
+<!-- Маникюр -->
+<div class="service-box fade-up">
+
+<div class="service-row">
+
+<div class="service-text">
+<h3>Маникюр</h3>
+<p>
+Професионален маникюр с модерни техники,
+гелове и декорации. Нашите специалисти
+ще се погрижат за красиви и здрави нокти.
+</p>
+
+<a asp-controller="Services"
+   asp-action="Category"
+   asp-route-id="2"
+   class="btn sh-btn-book">
+Вижте повече
+</a>
 </div>
 
+<div class="service-image">
+<img src="/images/salon6.jpg">
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Педикюр -->
+<div class="service-box fade-up">
+
+<div class="service-row reverse">
+
+<div class="service-text">
+<h3>Педикюр</h3>
+<p>
+Релаксиращи процедури за грижа за краката,
+които осигуряват комфорт, здраве
+и перфектен външен вид.
+</p>
+
+<a asp-controller="Services"
+   asp-action="Category"
+   asp-route-id="3"
+   class="btn sh-btn-book">
+Вижте повече
+</a>
+</div>
+
+<div class="service-image">
+<img src="/images/salon3.jpg">
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Козметика -->
+<div class="service-box fade-up">
+
+<div class="service-row">
+
+<div class="service-text">
+<h3>Козметика</h3>
+<p>
+Професионални процедури за лице,
+почистване, хидратация и терапии
+за здрава и сияйна кожа.
+</p>
+
+<a asp-controller="Services"
+   asp-action="Category"
+   asp-route-id="4"
+   class="btn sh-btn-book">
+Вижте повече
+</a>
+</div>
+
+<div class="service-image">
+<img src="/images/salon5.jpg">
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Лазерна епилация -->
+<div class="service-box fade-up">
+
+<div class="service-row reverse">
+
+<div class="service-text">
+<h3>Лазерна епилация</h3>
+<p>
+Дълготрайно премахване на косми
+с модерна лазерна технология,
+която гарантира безопасност и ефективност.
+</p>
+
+<a asp-controller="Services"
+   asp-action="Category"
+   asp-route-id="5"
+   class="btn sh-btn-book">
+Вижте повече
+</a>
+</div>
+
+<div class="service-image">
+<img src="/images/salon7.jpg">
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- PARALLAX SECTION -->
+
+<section class="parallax-section">
+
+<div class="parallax-content">
+
+<h2>Красотата започва с грижа</h2>
+
+<p>
+Нашият екип използва модерни технологии
+и висококачествени продукти, за да ви
+осигури най-доброто изживяване.
+</p>
+
+<a asp-controller="Home"
+   asp-action="About"
+   class="btn sh-btn-book">
+За нас
+</a>
+
+</div>
+
+</section>
+
+
+<!-- GALLERY -->
+
+<section class="container gallery-section fade-up">
+
+<h2 class="services-title text-center mb-5">
+Галерия
+</h2>
+
+<div class="gallery-grid">
+
+<a href="/gallery/hair.jpg" class="gallery-card">
+<img src="/gallery/hair.jpg">
+</a>
+
+<a href="/gallery/hair1.jpg" class="gallery-card">
+<img src="/gallery/hair1.jpg">
+</a>
+
+<a href="/gallery/hair2.jpg" class="gallery-card">
+<img src="/gallery/hair2.jpg">
+</a>
+
+<a href="/gallery/hair4.jpg" class="gallery-card">
+<img src="/gallery/hair4.jpg">
+</a>
+
+<a href="/gallery/pedicure.jpg" class="gallery-card">
+<img src="/gallery/pedicure.jpg">
+</a>
+
+<a href="/gallery/pedicure1.jpg" class="gallery-card">
+<img src="/gallery/pedicure1.jpg">
+</a>
+
+<a href="/gallery/pedicure2.jpg" class="gallery-card">
+<img src="/gallery/pedicure2.jpg">
+</a>
+
+<a href="/gallery/manicure.jpg" class="gallery-card">
+<img src="/gallery/manicure.jpg">
+</a>
+
+<a href="/gallery/manicure1.jpg" class="gallery-card">
+<img src="/gallery/manicure1.jpg">
+</a>
+
+<a href="/gallery/manicure2.jpg" class="gallery-card">
+<img src="/gallery/manicure2.jpg">
+</a>
+
+<a href="/gallery/manicure3.jpg" class="gallery-card">
+<img src="/gallery/manicure3.jpg">
+</a>
+
+<a href="/gallery/hair6.jpg" class="gallery-card">
+<img src="/gallery/hair6.jpg">
+</a>
+
+<a href="/gallery/hair7.jpg" class="gallery-card">
+<img src="/gallery/hair7.jpg">
+</a>
+
+<a href="/gallery/hair8.jpg" class="gallery-card">
+<img src="/gallery/hair8.jpg">
+</a>
+
+<a href="/images/salon8.jpg" class="gallery-card">
+<img src="/images/salon8.jpg">
+</a>
+</div>
+
+</section>

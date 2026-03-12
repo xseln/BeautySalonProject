@@ -1,0 +1,68 @@
+﻿@model BeautySalonProject.Areas.Client.ViewModels.Appointments.EditAppointmentVm
+
+<div class="sh-page-hero text-center mb-4">
+
+<div class="sh-slogan-wrap justify-content-center">
+<span class="line"></span>
+<span class="sh-slogan">SH Beauty Studio</span>
+<span class="line"></span>
+</div>
+
+<h1 class="sh-hero-title mt-2">Редакция на час</h1>
+
+</div>
+
+<div class="sh-form-card">
+
+<form method="post">
+
+<input type="hidden" name="id" value="@Model.AppointmentId"/>
+
+<div class="mb-3">
+
+<label class="form-label">Служител</label>
+
+<select class="form-select sh-input" name="employeeId">
+
+				@foreach (var e in Model.Employees)
+				{
+	<option value="@e.Id" selected="@(e.Id==Model.EmployeeId)">
+						@e.Name
+	</option>
+				}
+
+</select>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">Дата</label>
+
+<input type="date"
+class="form-control sh-input"
+name="date"
+value="@Model.Date.ToString("yyyy-MM-dd")"/>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">Свободни часове</label>
+
+<div id="slotsBox" class="sh-slot-grid">
+
+</div>
+
+</div>
+
+<button class="btn sh-btn-book">
+Запази промяната
+</button>
+
+</form>
+
+</div>
+@section Scripts {
+	<script src="~/js/appointment-edit.js"></script>
+}

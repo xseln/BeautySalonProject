@@ -15,7 +15,7 @@
         public string EmployeeName { get; set; } = "";
         public string ServiceName { get; set; } = "";
         public string VariantName { get; set; } = "";
-        public string ClientUserId { get; set; } = "";
+        public string ClientName { get; set; } = "";
         public byte Status { get; set; }
     }
 }
