@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -1625,4 +1625,61 @@ body {
     .gallery-grid {
         column-count: 1;
     }
+}
+
+/* Златен бордър */
+.border-gold {
+    border: 1px solid #D4AF37 !important;
+}
+
+/* Employee cards */
+.sh-employee-card {
+    transition: all 0.3s ease;
+}
+
+    .sh-employee-card:hover {
+        background: #f3ede7;
+        transform: translateY(-2px);
+    }
+
+    .sh-employee-card.active {
+        background: #3E2723;
+        color: #D4AF37;
+        border: 1px solid #3E2723;
+    }
+
+/* Slot бутони */
+.slot-btn {
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.9rem;
+}
+
+    .slot-btn.btn-primary {
+        background-color: #3E2723;
+        border-color: #3E2723;
+    }
+
+/* Inputs */
+.form-select:focus,
+.form-control:focus {
+    border-color: #C5A059;
+    box-shadow: 0 0 0 0.15rem rgba(197,160,89,0.3);
+}
+
+/* Бутон */
+button[type="submit"] {
+    transition: 0.3s;
+}
+
+    button[type="submit"]:hover {
+        background: #2c1b17;
+    }
+.sh-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.8rem; 
+    font-weight: 700;
+    color: #3E2723;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
 }

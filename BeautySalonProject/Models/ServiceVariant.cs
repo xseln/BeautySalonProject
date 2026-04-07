@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BeautySalonProject.Models;
 
-public partial class ServiceVariant
+public class ServiceVariant
 {
     public int VariantId { get; set; }
 

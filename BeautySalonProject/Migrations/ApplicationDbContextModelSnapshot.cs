@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BeautySalonProject.Data.Migrations
+namespace BeautySalonProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -354,7 +354,7 @@ namespace BeautySalonProject.Data.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Services");
+                    b.ToTable("Services", (string)null);
                 });
 
             modelBuilder.Entity("BeautySalonProject.Models.ServiceCategory", b =>
@@ -380,7 +380,7 @@ namespace BeautySalonProject.Data.Migrations
                     b.HasIndex(new[] { "Name" }, "UQ_ServiceCategories_Name")
                         .IsUnique();
 
-                    b.ToTable("ServiceCategories");
+                    b.ToTable("ServiceCategories", (string)null);
                 });
 
             modelBuilder.Entity("BeautySalonProject.Models.ServiceVariant", b =>
@@ -414,7 +414,7 @@ namespace BeautySalonProject.Data.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("ServiceVariants");
+                    b.ToTable("ServiceVariants", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BeautySalonProject.Models;
 
-public partial class Inquiry
+public class Inquiry
 {
     public int InquiryId { get; set; }
 

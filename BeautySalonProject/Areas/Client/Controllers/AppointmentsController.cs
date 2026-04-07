@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using BeautySalonProject.Models;
 using BeautySalonProject.Areas.Client.ViewModels.Appointments;
 using BeautySalonProject.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
 
 namespace BeautySalonProject.Areas.Client.Controllers
 {
@@ -13,392 +15,321 @@ namespace BeautySalonProject.Areas.Client.Controllers
     public class AppointmentsController : Controller
     {
         private readonly ApplicationDbContext _db;
-        public AppointmentsController(ApplicationDbContext db)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public AppointmentsController(ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
-       
+
         [HttpGet]
-        public async Task<IActionResult> Book(int variantId, DateTime? date, int? employeeId)
+        public async Task<IActionResult> Book(int? serviceId)
         {
-            var variant = await _db.ServiceVariants
-                .Include(v => v.Service)
-                .ThenInclude(s => s.Category)
-                .FirstOrDefaultAsync(v => v.VariantId == variantId && v.IsActive);
+            var vm = new ClientBookVm();
 
-            if (variant == null) return NotFound();
-
-            var employees = await _db.Employees
-                .Where(e => e.IsActive)
-                .OrderBy(e => e.FirstName).ThenBy(e => e.LastName)
-                .Select(e => new EmployeeOptionVm
-                {
-                    EmployeeId = e.EmployeeId,
-                    Name = e.FirstName + " " + e.LastName,
-                    JobTitle = e.JobTitle,
-                    IsActive = e.IsActive
-                })
+            vm.Categories = await _db.ServiceCategories
+                .Where(c => c.IsActive)
+                .Select(c => new SelectListItem { Value = c.CategoryId.ToString(), Text = c.Name })
                 .ToListAsync();
-
-            var vm = new ClientBookVm
-            {
-                VariantId = variant.VariantId,
-                EmployeeId = employeeId ?? employees.FirstOrDefault()?.EmployeeId ?? 0,
-                Date = (date ?? DateTime.Today).Date,
-                VariantTitle = $"{variant.Service.Name} – {variant.VariantName}",
-                DurationMinutes = variant.DurationMinutes,
-                Price = variant.Price,
-                Employees = employees
-            };
-
-            if (vm.EmployeeId != 0)
-            {
-                vm.Slots = await BuildSlots(vm.EmployeeId, vm.Date, vm.DurationMinutes);
-            }
-
-            return View(vm);
-        }
-        [HttpGet]
-        public async Task<IActionResult> Slots(int employeeId, DateTime date, int variantId)
-        {
-            var variant = await _db.ServiceVariants
-                .AsNoTracking()
-                .FirstOrDefaultAsync(v => v.VariantId == variantId && v.IsActive);
-
-            if (variant == null) return NotFound();
-
-            var slots = await BuildSlots(employeeId, date.Date, variant.DurationMinutes);
-            return Json(slots.Where(s => s.IsAvailable).ToList());
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Book(ClientBookVm vm)
-        {
-            if (!ModelState.IsValid)
-            {
-                await FillBookUi(vm);
-                return View(vm);
-            }
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId)) return Forbid();
-
-            var variant = await _db.ServiceVariants
-                .Include(v => v.Service)
-                .FirstOrDefaultAsync(v => v.VariantId == vm.VariantId && v.IsActive);
-
-            if (variant == null) return NotFound();
-
-            if (!TimeOnly.TryParse(vm.StartTime, out var startTime))
-            {
-                ModelState.AddModelError(nameof(vm.StartTime), "Невалиден час.");
-                await FillBookUi(vm);
-                return View(vm);
-            }
-
-            var startAt = vm.Date.Date.AddHours(startTime.Hour).AddMinutes(startTime.Minute);
-            var endAt = startAt.AddMinutes(variant.DurationMinutes);
-
-            var canBook = await CanBook(vm.EmployeeId, startAt, endAt);
-            if (!canBook)
-            {
-                ModelState.AddModelError("", "Часът вече е зает или служителят не работи тогава.");
-                await FillBookUi(vm);
-                return View(vm);
-            }
-
-            var appt = new Appointment
-            {
-                VariantId = vm.VariantId,
-                EmployeeId = vm.EmployeeId,
-                ClientUserId = userId,
-                StartAt = startAt,
-                EndAt = endAt,
-                Notes = string.IsNullOrWhiteSpace(vm.Notes) ? null : vm.Notes.Trim(),
-                Status = (byte)AppointmentStatus.Booked,
-                CreatedAt = DateTime.UtcNow,
-                FinalPrice = variant.Price
-            };
-
-            _db.Appointments.Add(appt);
-            await _db.SaveChangesAsync();
-
-            return RedirectToAction(nameof(My));
-        }
-        [HttpGet]
-        public async Task<IActionResult> My()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId)) return Forbid();
-
-            var now = DateTime.UtcNow;
-
-            var rows = await _db.Appointments
-                .Where(a => a.ClientUserId == userId)
-                .Include(a => a.Employee)
-                .Include(a => a.Variant)
-                    .ThenInclude(v => v.Service)
-                .OrderByDescending(a => a.StartAt)
-                .Select(a => new ClientAppointmentRowVm
-                {
-                    AppointmentId = a.AppointmentId,
-                    StartAt = a.StartAt,
-                    EndAt = a.EndAt,
-                    ServiceName = a.Variant.Service.Name,
-                    VariantName = a.Variant.VariantName,
-                    EmployeeName = a.Employee.FirstName + " " + a.Employee.LastName,
-                    FinalPrice = a.FinalPrice,
-                    Status = a.Status
-                })
-                .ToListAsync();
-
-            foreach (var r in rows)
-            {
-                r.StatusText = ((AppointmentStatus)r.Status) switch
-                {
-                    AppointmentStatus.Booked => "Запазен",
-                    AppointmentStatus.Completed => "Приключен",
-                    AppointmentStatus.Cancelled => "Отказан",
-					_ => "Отказан"
-				};
-
-                r.CanCancel = r.Status == (byte)AppointmentStatus.Booked && r.StartAt > now.AddHours(2);
-            }
-
-            var vm = new ClientMyAppointmentsVm
-            {
-                Upcoming = rows.Where(r => r.StartAt >= now.AddMinutes(-1)).OrderBy(r => r.StartAt).ToList(),
-                Past = rows.Where(r => r.StartAt < now.AddMinutes(-1)).OrderByDescending(r => r.StartAt).ToList()
-            };
-
-            return View(vm);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cancel(int id)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId)) return Forbid();
-
-            var appt = await _db.Appointments
-                .FirstOrDefaultAsync(a => a.AppointmentId == id && a.ClientUserId == userId);
-
-            if (appt == null) return NotFound();
-
-            if (appt.Status != (byte)AppointmentStatus.Booked || appt.StartAt <= DateTime.Now.AddHours(2))
-                return BadRequest("Не можеш да отмениш този час.");
-
-            appt.Status = (byte)AppointmentStatus.Cancelled;
-            appt.UpdatedAt = DateTime.UtcNow;
-
-            await _db.SaveChangesAsync();
-
-            TempData["Ok"] = "Часът е отказан.";
-            return RedirectToAction(nameof(My));
-        }
-        private async Task FillBookUi(ClientBookVm vm)
-        {
-            var variant = await _db.ServiceVariants
-                .Include(v => v.Service)
-                .FirstOrDefaultAsync(v => v.VariantId == vm.VariantId);
-
-            vm.VariantTitle = variant == null ? "" : $"{variant.Service.Name} – {variant.VariantName}";
-            vm.DurationMinutes = variant?.DurationMinutes ?? vm.DurationMinutes;
-            vm.Price = variant?.Price ?? vm.Price;
 
             vm.Employees = await _db.Employees
-                .Where(e => e.IsActive)
-                .OrderBy(e => e.FirstName).ThenBy(e => e.LastName)
+                .Where(e => e.IsActive) 
                 .Select(e => new EmployeeOptionVm
                 {
                     EmployeeId = e.EmployeeId,
-                    Name = e.FirstName + " " + e.LastName,
-                    JobTitle = e.JobTitle,
-                    IsActive = e.IsActive
-                }).ToListAsync();
-
-            if (vm.EmployeeId != 0)
-                vm.Slots = await BuildSlots(vm.EmployeeId, vm.Date.Date, vm.DurationMinutes);
-        }
-        private async Task<List<TimeSlotVm>> BuildSlots(int employeeId, DateTime date, int durationMinutes)
-        {
-            var d = DateOnly.FromDateTime(date);
-
-            var workDay = await _db.EmployeeWorkDays
-                .AsNoTracking()
-                .FirstOrDefaultAsync(w => w.EmployeeId == employeeId && w.Date == d);
-
-            TimeOnly start;
-            TimeOnly end;
-
-            if (workDay == null || !workDay.IsWorking || workDay.StartTime == null || workDay.EndTime == null)
-            {
-                // fallback работно време
-                start = new TimeOnly(9, 0);
-                end = new TimeOnly(18, 0);
-            }
-            else
-            {
-                start = workDay.StartTime.Value;
-                end = workDay.EndTime.Value;
-            }
-
-            var dayStart = date.Date;
-            var dayEnd = date.Date.AddDays(1);
-
-            var busy = await _db.Appointments
-                .AsNoTracking()
-                .Where(a => a.EmployeeId == employeeId
-                            && a.StartAt >= dayStart && a.StartAt < dayEnd
-                            && a.Status != (byte)AppointmentStatus.Cancelled)
-                .Select(a => new { a.StartAt, a.EndAt })
-                .ToListAsync();
-
-            var slots = new List<TimeSlotVm>();
-            var step = 15;
-
-            var cur = start;
-            while (cur.AddMinutes(durationMinutes) <= end)
-            {
-                var startAt = date.Date.AddHours(cur.Hour).AddMinutes(cur.Minute);
-                var endAt = startAt.AddMinutes(durationMinutes);
-
-                bool overlaps = busy.Any(b => startAt < b.EndAt && endAt > b.StartAt);
-
-                slots.Add(new TimeSlotVm
-                {
-                    Value = cur.ToString("HH:mm"),
-                    Label = cur.ToString("HH:mm"),
-                    IsAvailable = !overlaps
-                });
-
-                cur = cur.AddMinutes(step);
-            }
-
-            return slots;
-
-        }
-
-        private async Task<bool> CanBook(int employeeId, DateTime startAt, DateTime endAt)
-        {
-            var d = DateOnly.FromDateTime(startAt);
-
-            var wd = await _db.EmployeeWorkDays
-                .AsNoTracking()
-                .FirstOrDefaultAsync(w => w.EmployeeId == employeeId && w.Date == d);
-
-            TimeOnly startWork;
-            TimeOnly endWork;
-
-            if (wd == null || !wd.IsWorking || wd.StartTime == null || wd.EndTime == null)
-            {
-                startWork = new TimeOnly(9, 0);
-                endWork = new TimeOnly(18, 0);
-            }
-            else
-            {
-                startWork = wd.StartTime.Value;
-                endWork = wd.EndTime.Value;
-            }
-
-            var startT = TimeOnly.FromDateTime(startAt);
-            var endT = TimeOnly.FromDateTime(endAt);
-
-            if (startT < startWork || endT > endWork)
-                return false;
-
-            var overlaps = await _db.Appointments.AnyAsync(a =>
-                a.EmployeeId == employeeId
-                && a.Status != (byte)AppointmentStatus.Cancelled
-                && startAt < a.EndAt && endAt > a.StartAt);
-
-            return !overlaps;
-        }
-        public async Task<IActionResult> Edit(int id)
-        {
-            var a = await _db.Appointments
-                .Include(x => x.Employee)
-                .Include(x => x.Variant)
-                .FirstOrDefaultAsync(x => x.AppointmentId == id);
-
-            if (a == null) return NotFound();
-
-            if (DateTime.Now >= a.StartAt.AddHours(-2))
-            {
-                TempData["Err"] = "Часът може да се редактира само до 2 часа предварително.";
-                return RedirectToAction(nameof(My));
-            }
-
-            var employees = await _db.Employees
-                .Where(e => e.IsActive)
-                .Select(e => new EditAppointmentVm.EmployeeOption
-                {
-                    Id = e.EmployeeId,
                     Name = e.FirstName + " " + e.LastName
                 })
                 .ToListAsync();
 
+            if (serviceId.HasValue)
+            {
+                var service = await _db.Services
+                    .Include(s => s.Category)
+                    .FirstOrDefaultAsync(s => s.ServiceId == serviceId);
+
+                if (service != null)
+                {
+                    vm.CategoryId = service.CategoryId;
+                    var variant = await _db.ServiceVariants
+                        .FirstOrDefaultAsync(v => v.ServiceId == service.ServiceId && v.IsActive);
+
+                    if (variant != null)
+                    {
+                        vm.VariantId = variant.VariantId;
+                        vm.DurationMinutes = variant.DurationMinutes;
+                        vm.Price = variant.Price;
+                        vm.VariantTitle = variant.VariantName;
+                    }
+                }
+            }
+
+            return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetServicesByCategory(int categoryId)
+        {
+            var services = await _db.Services
+                .Where(s => s.CategoryId == categoryId && s.IsActive)
+                .Select(s => new { s.ServiceId, s.Name })
+                .ToListAsync();
+
+            return Json(services);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetVariants(int serviceId)
+        {
+            var variants = await _db.ServiceVariants
+                .Where(v => v.ServiceId == serviceId && v.IsActive)
+                .Select(v => new {
+                    v.VariantId,
+                    v.VariantName,
+                    v.Price,
+                    v.DurationMinutes
+                })
+                .ToListAsync();
+
+            return Json(variants);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAvailableSlots(int employeeId, int variantId, string date)
+        {
+            if (!DateOnly.TryParse(date, out var parsedDate))
+                return Json(new List<string>());
+
+            var variant = await _db.ServiceVariants.FindAsync(variantId);
+            if (variant == null) return Json(new List<string>());
+
+            var workDay = await _db.EmployeeWorkDays
+                .FirstOrDefaultAsync(x => x.EmployeeId == employeeId && x.Date == parsedDate);
+
+            if (workDay == null || !workDay.IsWorking || !workDay.StartTime.HasValue || !workDay.EndTime.HasValue)
+                return Json(new List<string>());
+
+            var startAtDate = parsedDate.ToDateTime(TimeOnly.MinValue);
+            var endAtDate = startAtDate.AddDays(1);
+
+            var appointments = await _db.Appointments
+                .Where(a => a.EmployeeId == employeeId &&
+                            a.StartAt >= startAtDate && a.StartAt < endAtDate &&
+                            a.Status != (byte)AppointmentStatus.Cancelled)
+                .ToListAsync();
+
+            var slots = new List<string>();
+            var current = workDay.StartTime.Value;
+            var end = workDay.EndTime.Value;
+
+            while (current.AddMinutes(variant.DurationMinutes) <= end)
+            {
+                var slotStart = parsedDate.ToDateTime(current);
+                var slotEnd = slotStart.AddMinutes(variant.DurationMinutes);
+
+                bool isTaken = appointments.Any(a => slotStart < a.EndAt && slotEnd > a.StartAt);
+
+                if (!isTaken)
+                {
+                    slots.Add(current.ToString("HH:mm"));
+                }
+
+                current = current.AddMinutes(30);
+            }
+
+            return Json(slots);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Book(ClientBookVm model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.Categories = await _db.ServiceCategories
+                    .Where(c => c.IsActive)
+                    .Select(c => new SelectListItem { Value = c.CategoryId.ToString(), Text = c.Name })
+                    .ToListAsync();
+                return View(model);
+            }
+
+            var variant = await _db.ServiceVariants.FindAsync(model.VariantId);
+            if (variant == null) return RedirectToAction("Book");
+
+            var user = await _userManager.GetUserAsync(User);
+            if (!TimeOnly.TryParse(model.StartTime, out var startTime))
+            {
+                ModelState.AddModelError("StartTime", "Невалиден час.");
+                return View(model);
+            }
+
+            var startDateTime = model.Date.Date
+            .AddHours(startTime.Hour)
+            .AddMinutes(startTime.Minute);
+            var endDateTime = startDateTime.AddMinutes(variant.DurationMinutes);
+
+            var appointment = new Appointment
+            {
+                EmployeeId = model.EmployeeId,
+                VariantId = model.VariantId,
+                StartAt = startDateTime,
+                EndAt = endDateTime,
+                ClientUserId = user?.Id,
+                CreatedAt = DateTime.Now,
+                Status = (byte)AppointmentStatus.Booked,
+                FinalPrice = variant.Price
+            };
+
+            _db.Appointments.Add(appointment);
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction("My");
+        }
+
+		[HttpGet]
+		public async Task<IActionResult> My(int tab = 0)
+		{
+			var userId = _userManager.GetUserId(User);
+			if (string.IsNullOrEmpty(userId)) return Forbid();
+
+			var allAppointments = await _db.Appointments
+				.Where(a => a.ClientUserId == userId)
+				.Include(a => a.Employee)
+				.Include(a => a.Variant).ThenInclude(v => v.Service)
+				.OrderByDescending(a => a.StartAt)
+				.ToListAsync();
+
+			var now = DateTime.Now;
+
+			var vm = new ClientMyAppointmentsVm
+			{
+				Tab = tab,
+				Upcoming = allAppointments
+					.Where(a => a.StartAt >= now)
+					.Select(a => MapToRow(a))
+					.ToList(),
+
+				Past = allAppointments
+					.Where(a => a.StartAt < now)
+					.Select(a => MapToRow(a))
+					.ToList()
+			};
+
+			return View(vm);
+		}
+
+		private ClientAppointmentRowVm MapToRow(Appointment a)
+		{
+			// Прозорец от 2 часа след създаването
+			var canEditOrCancel = (DateTime.Now - a.CreatedAt).TotalHours <= 2;
+
+			return new ClientAppointmentRowVm
+			{
+				AppointmentId = a.AppointmentId,
+				StartAt = a.StartAt,
+				EndAt = a.EndAt,
+				ServiceName = a.Variant.Service.Name,
+				VariantName = a.Variant.VariantName,
+				EmployeeName = a.Employee.FirstName + " " + a.Employee.LastName,
+				FinalPrice = a.FinalPrice,
+				Status = a.Status,
+				StatusText = a.Status == 1 ? "Резервиран" : (a.Status == 3 ? "Отменен" : "Завършен"),
+
+				// Това свойство ще управлява видимостта на бутоните
+				CanCancel = canEditOrCancel && a.Status != 3
+			};
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Cancel(int id)
+		{
+			var appointment = await _db.Appointments.FindAsync(id);
+			if (appointment == null) return NotFound();
+
+			// ПРОВЕРКА ЗА СИГУРНОСТ:
+			var hoursSinceCreation = (DateTime.Now - appointment.CreatedAt).TotalHours;
+
+			if (hoursSinceCreation > 2)
+			{
+				TempData["Err"] = "Срокът за промяна на тази резервация (2 часа) е изтекъл. Моля, свържете се с нас по телефона.";
+				return RedirectToAction(nameof(My));
+			}
+
+			appointment.Status = 3; // Отменен
+			await _db.SaveChangesAsync();
+
+			TempData["Ok"] = "Резервацията е отменена успешно.";
+			return RedirectToAction(nameof(My));
+		}
+
+        // 1. Зареждане на формата за редакция
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var appointment = await _db.Appointments
+                .Include(a => a.Employee)
+                .FirstOrDefaultAsync(a => a.AppointmentId == id);
+
+            if (appointment == null) return NotFound();
+
+            // Проверка на 2-часовия прозорец
+            var hoursSinceCreation = (DateTime.Now - appointment.CreatedAt).TotalHours;
+            if (hoursSinceCreation > 2)
+            {
+                TempData["Err"] = "Срокът за редакция на този час е изтекъл.";
+                return RedirectToAction(nameof(My));
+            }
+
+            // Подготовка на ViewModel-а
             var vm = new EditAppointmentVm
             {
-                AppointmentId = a.AppointmentId,
-                EmployeeId = a.EmployeeId,
-                Date = a.StartAt.Date,
-                VariantId = a.VariantId,
-                Employees = employees
+                AppointmentId = appointment.AppointmentId,
+                EmployeeId = appointment.EmployeeId,
+                Date = DateOnly.FromDateTime(appointment.StartAt),
+                // Вземаме всички активни служители за избор
+                Employees = await _db.Employees
+                    .Where(e => e.IsActive)
+                    .Select(e => new EditAppointmentVm.EmployeeOption
+                    {
+                        Id = e.EmployeeId,
+                        Name = e.FirstName + " " + e.LastName
+                    }).ToListAsync()
             };
 
             return View(vm);
         }
 
+        // 2. Записване на промените
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int employeeId, DateTime date, string slot)
+        public async Task<IActionResult> Edit(int id, int employeeId, DateOnly date, TimeOnly slot)
         {
-            var a = await _db.Appointments.FirstOrDefaultAsync(x => x.AppointmentId == id);
+            var appointment = await _db.Appointments.FindAsync(id);
+            if (appointment == null) return NotFound();
 
-            if (a == null) return NotFound();
-
-            if (DateTime.Now >= a.StartAt.AddHours(-2))
+            // Повторна проверка за сигурност на сървъра
+            if ((DateTime.Now - appointment.CreatedAt).TotalHours > 2)
             {
-                TempData["Err"] = "Редакцията вече не е възможна.";
+                TempData["Err"] = "Грешка: Времето за редакция е изтекло.";
                 return RedirectToAction(nameof(My));
             }
 
-            var time = TimeSpan.Parse(slot);
+            // Изчисляваме новите начален и краен час
+            // Тук приемаме, че времетраенето остава същото (от оригиналния запис)
+            var duration = appointment.EndAt - appointment.StartAt;
 
-            a.EmployeeId = employeeId;
-            a.StartAt = date.Date.Add(time);
-            a.EndAt = a.StartAt.AddMinutes(60);
+            DateTime newStart = date.ToDateTime(slot);
+            DateTime newEnd = newStart.Add(duration);
 
-            a.UpdatedAt = DateTime.Now;
+            // TODO: Тук е добре да добавиш проверка дали новият слот не е зает междувременно!
+
+            appointment.EmployeeId = employeeId;
+            appointment.StartAt = newStart;
+            appointment.EndAt = newEnd;
 
             await _db.SaveChangesAsync();
 
-            TempData["Ok"] = "Часът беше променен.";
-
+            TempData["Ok"] = "Часът беше променен успешно.";
             return RedirectToAction(nameof(My));
-        }
-        public async Task<IActionResult> GetSlots(DateTime date, int employeeId)
-        {
-            var taken = await _db.Appointments
-                .Where(a => a.EmployeeId == employeeId &&
-                            a.StartAt.Date == date.Date &&
-                            a.Status != 3)
-                .Select(a => a.StartAt.TimeOfDay)
-                .ToListAsync();
-
-            var slots = new List<string>();
-
-            for (int h = 9; h < 18; h++)
-            {
-                var t = new TimeSpan(h, 0, 0);
-
-                if (!taken.Contains(t))
-                    slots.Add(t.ToString(@"hh\:mm"));
-            }
-
-            return Json(slots);
         }
     }
 }

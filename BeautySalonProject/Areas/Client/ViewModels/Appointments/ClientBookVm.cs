@@ -1,5 +1,6 @@
 ﻿using static BeautySalonProject.Areas.Admin.ViewModels.Appointments.AdminAppointmentDetailsVm;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BeautySalonProject.Areas.Client.ViewModels.Appointments
 {
@@ -24,7 +25,8 @@ namespace BeautySalonProject.Areas.Client.ViewModels.Appointments
         public string VariantTitle { get; set; } = "";
         public int DurationMinutes { get; set; }
         public decimal Price { get; set; }
-
+        public int CategoryId { get; set; }
+        public List<SelectListItem> Categories { get; set; } = new();
         public List<EmployeeOptionVm> Employees { get; set; } = new();
         public List<TimeSlotVm> Slots { get; set; } = new();
     }

@@ -338,96 +338,89 @@ namespace BeautySalonProject.Areas.Admin.Controllers
             return View(vm);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Weekly(AdminEmployeeWeeklyScheduleVm vm)
-        {
-            var employee = await _db.Employees.FirstOrDefaultAsync(e => e.EmployeeId == vm.EmployeeId);
-            if (employee == null) return NotFound();
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Weekly(AdminEmployeeWeeklyScheduleVm vm)
+		{
+			var employee = await _db.Employees.FirstOrDefaultAsync(e => e.EmployeeId == vm.EmployeeId);
+			if (employee == null) return NotFound();
 
-            vm.EmployeeName = employee.FirstName + " " + employee.LastName;
+			vm.EmployeeName = employee.FirstName + " " + employee.LastName;
 
-            TimeOnly weekdayStart = new TimeOnly(9, 0);
-            TimeOnly weekdayEnd = new TimeOnly(18, 0);
-            TimeOnly satStart = new TimeOnly(11, 0);
-            TimeOnly satEnd = new TimeOnly(17, 0);
+			// 1. Валидация на входа
+			foreach (var d in vm.Days)
+			{
+				if (d.IsWorking)
+				{
+					if (!d.StartTime.HasValue || !d.EndTime.HasValue || d.EndTime <= d.StartTime)
+					{
+						ModelState.AddModelError("", $"Невалиден диапазон за {d.DayName} ({d.Date:dd.MM}).");
+					}
+				}
+			}
 
-            foreach (var d in vm.Days)
-            {
-                if (!d.IsWorking)
-                {
-                    d.StartTime = null;
-                    d.EndTime = null;
-                    continue;
-                }
+			if (!ModelState.IsValid) return View(vm);
 
-                if (!d.StartTime.HasValue || !d.EndTime.HasValue || d.EndTime <= d.StartTime)
-                    ModelState.AddModelError("", $"Невалиден диапазон за {d.DayName} ({d.Date:dd.MM}).");
-            }
+			var start = vm.WeekStart;
+			var endExclusive = vm.WeekStart.AddDays(7);
 
-            if (!ModelState.IsValid)
-                return View(vm);
+			// 2. Вземаме съществуващите записи за седмицата
+			var existing = await _db.EmployeeWorkDays
+				.Where(x => x.EmployeeId == vm.EmployeeId && x.Date >= start && x.Date < endExclusive)
+				.ToListAsync();
 
-            var start = vm.WeekStart;
-            var endExclusive = vm.WeekStart.AddDays(7);
+			// 3. Обхождаме дните от формата
+			foreach (var d in vm.Days)
+			{
+				var row = existing.FirstOrDefault(x => x.Date == d.Date);
 
-            var existing = await _db.EmployeeWorkDays
-                .Where(x => x.EmployeeId == vm.EmployeeId && x.Date >= start && x.Date < endExclusive)
-                .ToListAsync();
+				if (!d.IsWorking)
+				{
+					// Ако денят е отбелязан като почивен, но има запис в базата - трием го или го правим IsWorking = false
+					if (row != null)
+					{
+						row.IsWorking = false;
+						row.StartTime = null;
+						row.EndTime = null;
+					}
+					continue;
+				}
 
-            foreach (var d in vm.Days)
-            {
-                var row = existing.FirstOrDefault(x => x.Date == d.Date);
+				// Ако няма запис за този работен ден - създаваме го
+				if (row == null)
+				{
+					row = new EmployeeWorkDay
+					{
+						EmployeeId = vm.EmployeeId,
+						Date = d.Date
+					};
+					_db.EmployeeWorkDays.Add(row);
+				}
 
-                var dt = d.Date.ToDateTime(new TimeOnly(0, 0));
-                int dow = (int)dt.DayOfWeek;
-                bool isSunday = dow == 0;
-                bool isSaturday = dow == 6;
+				// Записваме часовете (винаги, без значение дали са "стандартни")
+				row.IsWorking = true;
+				row.StartTime = d.StartTime;
+				row.EndTime = d.EndTime;
+			}
 
-                bool defaultWorking = !isSunday;
-                TimeOnly defaultStart = isSaturday ? satStart : weekdayStart;
-                TimeOnly defaultEnd = isSaturday ? satEnd : weekdayEnd;
+			try
+			{
+				await _db.SaveChangesAsync();
+				TempData["Ok"] = "Седмичният график е запазен успешно.";
+			}
+			catch (Exception ex)
+			{
+				ModelState.AddModelError("", "Грешка при запис в базата: " + ex.Message);
+				return View(vm);
+			}
 
-                bool isDefault =
-                    d.IsWorking == defaultWorking &&
-                    (
-                        !d.IsWorking ||
-                        (d.StartTime == defaultStart && d.EndTime == defaultEnd)
-                    );
-
-                if (isDefault)
-                {
-                    if (row != null)
-                        _db.EmployeeWorkDays.Remove(row);
-
-                    continue;
-                }
-
-                if (row == null)
-                {
-                    row = new EmployeeWorkDay
-                    {
-                        EmployeeId = vm.EmployeeId,
-                        Date = d.Date
-                    };
-                    _db.EmployeeWorkDays.Add(row);
-                }
-
-                row.IsWorking = d.IsWorking;
-                row.StartTime = d.StartTime;
-                row.EndTime = d.EndTime;
-            }
-
-            await _db.SaveChangesAsync();
-
-            TempData["Ok"] = "Седмичният график е запазен.";
-            return RedirectToAction(nameof(Weekly), new
-            {
-                id = vm.EmployeeId,
-                week = vm.WeekStart.ToDateTime(new TimeOnly(0, 0))
-            });
-        }
-        [HttpGet]
+			return RedirectToAction(nameof(Weekly), new
+			{
+				id = vm.EmployeeId,
+				week = vm.WeekStart.ToDateTime(new TimeOnly(0, 0))
+			});
+		}
+		[HttpGet]
         public async Task<IActionResult> CreateAccount(int id)
         {
             var e = await _db.Employees.FirstOrDefaultAsync(x => x.EmployeeId == id);

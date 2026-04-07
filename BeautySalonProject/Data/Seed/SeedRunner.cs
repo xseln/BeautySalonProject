@@ -12,9 +12,11 @@ namespace BeautySalonProject.Data.Seed
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
             var config = services.GetRequiredService<IConfiguration>();
+            var db = services.GetRequiredService<ApplicationDbContext>();
 
             await RoleSeeder.SeedRolesAsync(roleManager);
             await AdminSeeder.SeedAdminAsync(userManager, config);
+            await SalonDataSeeder.SeedAsync(db);
         }
     }
 }

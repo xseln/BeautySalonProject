@@ -35,7 +35,7 @@
         <div class="text-center mt-4">
             @if (User.Identity?.IsAuthenticated ?? false)
             {
-                        <a class="btn sh-btn-book" asp-area="Client" asp-controller="Appointments" asp-action="Create">Запази своя час</a>
+                        <a class="btn sh-btn-book" asp-area="Client" asp-controller="Appointments" asp-action="Book">Запази своя час</a>
             }
             else
             {

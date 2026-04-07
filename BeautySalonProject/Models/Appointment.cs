@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BeautySalonProject.Models;
 
-public partial class Appointment
+public class Appointment
 {
     public int AppointmentId { get; set; }
 

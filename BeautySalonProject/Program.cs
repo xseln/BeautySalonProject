@@ -1,4 +1,5 @@
 using BeautySalonProject.Data;
+using BeautySalonProject.Data.Seed;
 using BeautySalonProject.Models; 
 using BeautySalonProject.Services;
 using Microsoft.AspNetCore.Identity;
@@ -54,8 +55,47 @@ app.MapControllerRoute(
 app.MapRazorPages();
 using (var scope = app.Services.CreateScope())
 {
-    await BeautySalonProject.Data.Seed.SeedRunner
-        .RunAsync(scope.ServiceProvider);
+    var services = scope.ServiceProvider;
+
+    var db = services.GetRequiredService<ApplicationDbContext>();
+
+    await db.Database.MigrateAsync();
+
+    await SalonDataSeeder.SeedAsync(db);
+
+    // ?? ADMIN SEED
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var config = services.GetRequiredService<IConfiguration>();
+
+    var adminEmail = config["AdminSeed:Email"];
+    var adminPassword = config["AdminSeed:Password"];
+    var adminRole = config["AdminSeed:Role"];
+
+    // създаване на роля
+    if (!await roleManager.RoleExistsAsync(adminRole))
+    {
+        await roleManager.CreateAsync(new IdentityRole(adminRole));
+    }
+    if (!await roleManager.RoleExistsAsync("Staff"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Staff"));
+    }
+    // създаване на user
+    var user = await userManager.FindByEmailAsync(adminEmail);
+
+    if (user == null)
+    {
+        user = new ApplicationUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true
+        };
+
+        await userManager.CreateAsync(user, adminPassword);
+        await userManager.AddToRoleAsync(user, adminRole);
+    }
 }
 
 app.Run();

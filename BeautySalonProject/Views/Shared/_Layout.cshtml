@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BeautySalonProject.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -59,6 +59,7 @@ Chic & Unique
 
 <li class="nav-item">
 <a class="nav-link sh-nav-link"
+ asp-area=""
    asp-controller="Home"
    asp-action="Index">
 Начало
@@ -67,6 +68,7 @@ Chic & Unique
 
 <li class="nav-item">
 <a class="nav-link sh-nav-link"
+   asp-area=""
    asp-controller="Services"
    asp-action="Index">
 Услуги
@@ -75,6 +77,7 @@ Chic & Unique
 
 <li class="nav-item">
 <a class="nav-link sh-nav-link"
+   asp-area=""
    asp-controller="Home"
    asp-action="About">
 За нас
@@ -83,12 +86,44 @@ Chic & Unique
 
 <li class="nav-item">
 <a class="nav-link sh-nav-link"
+   asp-area=""
    asp-controller="Home"
    asp-action="Contacts">
 Контакти
 </a>
 </li>
-
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+        <li class="nav-item">
+            <a class="nav-link sh-nav-link"
+               asp-controller="Inquiries"
+               asp-action="Create">
+                Запитване
+            </a>
+        </li>
+                    }
+                    else if (User.IsInRole("Client"))
+                    {
+        <li class="nav-item">
+            <a class="nav-link sh-nav-link"
+               asp-area="Client"
+               asp-controller="Appointments"
+               asp-action="My">
+                Моите часове
+            </a>
+        </li>
+                    }
+                    @if (User.IsInRole("Client"))
+                    {
+        <li class="nav-item">
+            <a class="nav-link sh-nav-link"
+               asp-area="Client"
+               asp-controller="Appointments"
+               asp-action="Book">
+                Запази час
+            </a>
+        </li>
+                    }
 </ul>
 
 

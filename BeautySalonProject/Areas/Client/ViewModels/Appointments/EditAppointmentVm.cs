@@ -6,7 +6,7 @@
 
 		public int EmployeeId { get; set; }
 
-		public DateTime Date { get; set; }
+		public DateOnly Date { get; set; }
 
 		public int VariantId { get; set; }
 

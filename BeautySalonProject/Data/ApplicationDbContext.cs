@@ -23,6 +23,9 @@ namespace BeautySalonProject.Data
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<ServiceCategory>().ToTable("ServiceCategories");
+            modelBuilder.Entity<Service>().ToTable("Services");
+            modelBuilder.Entity<ServiceVariant>().ToTable("ServiceVariants");
             modelBuilder.Entity<Appointment>(entity =>
             {
                 entity.HasIndex(e => new { e.EmployeeId, e.StartAt }, "IX_Appointments_Employee_StartAt");
@@ -144,7 +147,8 @@ namespace BeautySalonProject.Data
 					  .HasForeignKey(x => x.EmployeeId)
 					  .OnDelete(DeleteBehavior.Cascade);
 			});
-		}
+
+        }
 
     }
 }

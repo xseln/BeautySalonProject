@@ -12,7 +12,7 @@
             <span class="line"></span>
         </div>
 
-        <h1 class="sh-hero-title mt-2">Моите часове</h1>
+        <h1 class="sh-title">Моите часове</h1>
 
         <div class="sh-hero-desc sh-muted">
             Преглед на предстоящи и минали посещения
@@ -71,43 +71,41 @@
 
         </div>
 
-        <div class="sh-appointment-actions">
+               <div class="sh-appointment-actions">
 
-        <span class="sh-status sh-status-booked">
+            <span class="sh-status sh-status-booked">
                                 @a.StatusText
-        </span>
+            </span>
 
                             @if (a.CanCancel)
                             {
-                <div class="d-flex gap-2">
+                    <div class="d-flex gap-2">
+                        <!-- Бутон за Редакция -->
+                        <a class="btn sh-btn-edit btn-sm"
+                           asp-area="Client"
+                           asp-controller="Appointments"
+                           asp-action="Edit"
+                           asp-route-id="@a.AppointmentId">
+                            Редактирай
+                        </a>
 
-                    <a class="btn sh-btn-edit btn-sm"
-                       asp-area="Client"
-                       asp-controller="Appointments"
-                       asp-action="Edit"
-                       asp-route-id="@a.AppointmentId">
-                        Редактирай
-                    </a>
-                                    @if (DateTime.Now >= a.StartAt.AddHours(-2))
-                                    {
+                        <!-- Форма за Отказ -->
+                        <form asp-action="Cancel"
+                              asp-controller="Appointments"
+                              asp-area="Client"
+                              method="post">
+                            <input type="hidden" name="id" value="@a.AppointmentId" />
+                            <button type="submit" class="btn sh-btn-cancel btn-sm">
+                                Откажи
+                            </button>
+                        </form>
+                    </div>
+                            }
+                            else if (a.Status != 3) // Ако не може да се откаже, но не е и вече отменено
+                            {
                     <span class="text-muted small">
-                        Редакцията е затворена
+                        <i class="fa-solid fa-lock me-1"></i> Редакцията е затворена
                     </span>
-                                    }
-                    <form asp-action="Cancel"
-                          asp-controller="Appointments"
-                          asp-area="Client"
-                          method="post">
-
-                        <input type="hidden" name="id" value="@a.AppointmentId" />
-
-                        <button class="btn sh-btn-cancel btn-sm">
-                            Откажи
-                        </button>
-
-                    </form>
-
-                </div>
                             }
 
         </div>
