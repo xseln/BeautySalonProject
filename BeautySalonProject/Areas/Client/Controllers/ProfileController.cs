@@ -1,8 +1,11 @@
-﻿using BeautySalonProject.Areas.Client.ViewModels.Profile;
-using BeautySalonProject.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using BeautySalonProject.Models;
+using BeautySalonProject.Data;
+using BeautySalonProject.Areas.Client.ViewModels.Profile;
+using BeautySalonProject.Areas.Staff.ViewModels.Profile;
 
 namespace BeautySalonProject.Areas.Client.Controllers
 {
@@ -17,40 +20,55 @@ namespace BeautySalonProject.Areas.Client.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
 
-            var vm = new ClientProfileVm
+            var vm = new EditProfileVm
             {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
+                Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Email = user.Email
+                FirstName = user.FirstName,
+                LastName = user.LastName
             };
 
             return View(vm);
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> Index(ClientProfileVm vm)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(EditProfileVm model)
         {
-            if (!ModelState.IsValid)
-                return View(vm);
-
             var user = await _userManager.GetUserAsync(User);
 
-            user.FirstName = vm.FirstName;
-            user.LastName = vm.LastName;
-            user.PhoneNumber = vm.PhoneNumber;
+            if (!ModelState.IsValid)
+                return View(model);
+
+            user.Email = model.Email;
+            user.UserName = model.Email;
+            user.PhoneNumber = model.PhoneNumber;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
 
             await _userManager.UpdateAsync(user);
 
-            ViewBag.Message = "Профилът е обновен успешно.";
+            if (!string.IsNullOrEmpty(model.NewPassword))
+            {
+                var result = await _userManager.ChangePasswordAsync(
+                    user,
+                    model.CurrentPassword,
+                    model.NewPassword
+                );
 
-            return View(vm);
+                if (!result.Succeeded)
+                {
+                    ModelState.AddModelError("", "Грешна текуща парола!");
+                    return View(model);
+                }
+            }
+
+            TempData["Ok"] = "Профилът е обновен успешно!";
+            return RedirectToAction("Index");
         }
     }
 }

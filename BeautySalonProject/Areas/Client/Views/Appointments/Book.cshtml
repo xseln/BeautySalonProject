@@ -50,7 +50,9 @@
                                      style="background: #ffffff; border: 1px solid #D4AF37; border-radius: 8px; padding: 10px 15px; cursor: pointer; min-width: 140px; text-align: center;"
                                      onclick="selectEmployee(this, @e.EmployeeId, '@e.Name')">
                                     <span class="sh-emp-name" style="display: block; font-family: 'Playfair Display', serif; font-weight: bold;">@e.Name</span>
-                                    <small class="sh-emp-role" style="color: #C5A059; text-transform: uppercase; font-size: 0.7rem;">@e.JobTitle</small>
+                                       <small class="sh-emp-role" style="color: #C5A059; font-size: 0.75rem; font-weight: 500; display: block; margin-top: 3px;">
+                                    @(string.IsNullOrEmpty(e.JobTitle) ? "Фризьор" : e.JobTitle)
+                                       </small>
                                 </div>
                         }
                     </div>

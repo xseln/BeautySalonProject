@@ -4,6 +4,7 @@ using BeautySalonProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeautySalonProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260408210959_AddJobTitle")]
+    partial class AddJobTitle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -216,14 +219,9 @@ namespace BeautySalonProject.Migrations
                     b.Property<int?>("PrimaryCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("EmployeeId");
 
                     b.HasIndex("PrimaryCategoryId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Employees");
                 });
@@ -602,13 +600,7 @@ namespace BeautySalonProject.Migrations
                         .HasForeignKey("PrimaryCategoryId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("BeautySalonProject.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
                     b.Navigation("PrimaryCategory");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BeautySalonProject.Models.EmployeeWorkDay", b =>

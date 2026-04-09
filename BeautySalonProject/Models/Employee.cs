@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeautySalonProject.Models;
 
@@ -21,6 +22,10 @@ public class Employee
 
     public string? JobTitle { get; set; }
     public int? PrimaryCategoryId { get; set; }
+    public string? UserId { get; set; }
+
+    [ForeignKey("UserId")]
+    public ApplicationUser? User { get; set; }
     public virtual ServiceCategory? PrimaryCategory { get; set; }
 
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();

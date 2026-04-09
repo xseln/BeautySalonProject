@@ -38,7 +38,8 @@ namespace BeautySalonProject.Areas.Client.Controllers
                 .Select(e => new EmployeeOptionVm
                 {
                     EmployeeId = e.EmployeeId,
-                    Name = e.FirstName + " " + e.LastName
+                    Name = e.FirstName + " " + e.LastName,
+                    JobTitle = e.JobTitle
                 })
                 .ToListAsync();
 
@@ -285,6 +286,7 @@ namespace BeautySalonProject.Areas.Client.Controllers
             {
                 AppointmentId = appointment.AppointmentId,
                 EmployeeId = appointment.EmployeeId,
+                VariantId = appointment.VariantId,
                 Date = DateOnly.FromDateTime(appointment.StartAt),
                 // Вземаме всички активни служители за избор
                 Employees = await _db.Employees

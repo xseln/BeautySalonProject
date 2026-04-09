@@ -1626,60 +1626,355 @@ body {
         column-count: 1;
     }
 }
+body {
+    font-family: 'Inter', sans-serif;
+}
+/* Основен контейнер */
+.sh-main-wrapper {
+    background: linear-gradient(135deg, #fdfaf6, #f6efe7);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
 
-/* Златен бордър */
+/* По-мек златен бордър */
 .border-gold {
-    border: 1px solid #D4AF37 !important;
+    border: 1px solid rgba(212, 175, 55, 0.4) !important;
 }
 
 /* Employee cards */
 .sh-employee-card {
-    transition: all 0.3s ease;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
     .sh-employee-card:hover {
-        background: #f3ede7;
-        transform: translateY(-2px);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        background: #fdfaf6;
     }
 
+    /* Активен служител */
     .sh-employee-card.active {
-        background: #3E2723;
-        color: #D4AF37;
-        border: 1px solid #3E2723;
+        background: linear-gradient(to right, #f3e4c8, #e8d3a3);
+        border: 1px solid #c5a059;
+        color: #3E2723;
     }
 
 /* Slot бутони */
 .slot-btn {
-    border-radius: 20px;
-    padding: 6px 14px;
+    border-radius: 25px;
+    padding: 7px 16px;
     font-size: 0.9rem;
+    border: 1px solid rgba(62, 39, 35, 0.2);
+    background: #fff;
+    transition: all 0.2s ease;
 }
 
+    .slot-btn:hover {
+        background: #f3ede7;
+    }
+
+    /* Избран час */
     .slot-btn.btn-primary {
-        background-color: #3E2723;
-        border-color: #3E2723;
+        background: linear-gradient(to right, #d8b27a, #b48a4a);
+        border: none;
+        color: white;
     }
 
 /* Inputs */
-.form-select:focus,
-.form-control:focus {
-    border-color: #C5A059;
-    box-shadow: 0 0 0 0.15rem rgba(197,160,89,0.3);
+.form-select,
+.form-control {
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #fff;
+}
+
+    .form-select:focus,
+    .form-control:focus {
+        border-color: #c5a059;
+        box-shadow: 0 0 0 0.15rem rgba(197,160,89,0.25);
+    }
+
+/* Summary box */
+.p-4 {
+    background: rgba(255,255,255,0.7) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(212,175,55,0.3);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
 }
 
 /* Бутон */
 button[type="submit"] {
-    transition: 0.3s;
+    transition: all 0.3s ease;
+    border-radius: 10px;
 }
 
     button[type="submit"]:hover {
-        background: #2c1b17;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
     }
+
+/* Заглавие */
 .sh-title {
     font-family: 'Playfair Display', serif;
-    font-size: 3.8rem; 
+    font-size: 3.2rem;
     font-weight: 700;
     color: #3E2723;
     letter-spacing: 0.5px;
-    margin-bottom: 15px;
+}
+
+/* Лейбъли */
+label {
+    color: #6d4c41;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+.staff-user {
+    margin-top: 10px;
+}
+
+    .staff-user .fw-bold {
+        padding: 8px 12px;
+        border-radius: 10px;
+        transition: 0.2s;
+    }
+
+        .staff-user .fw-bold:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+/* dropdown стил */
+.dropdown-menu {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.dropdown-item:hover {
+    background: #f3ede7;
+}
+.staff-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fff;
+}
+
+.staff-role {
+    font-size: 0.75rem;
+    color: #d8b27a; /* златисто */
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+}
+.staff-bubble {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 999px; /* pill shape */
+
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+    /* hover ефект */
+    .staff-bubble:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+
+    /* при клик */
+    .staff-bubble:active {
+        transform: scale(0.97);
+    }
+
+/* dropdown */
+.dropdown-menu {
+    border-radius: 12px;
+    border: none;
+    margin-top: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.dropdown-item:hover {
+    background: #f3ede7;
+}
+
+.profile-card {
+    max-width: 520px;
+    margin: auto;
+    background: linear-gradient(145deg, #fdfaf6, #f3ece4);
+    padding: 35px;
+    border-radius: 25px;
+    border: 1px solid rgba(212,175,55,0.25);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+    .profile-card h3 {
+        font-family: 'Playfair Display', serif;
+        color: #3E2723;
+        letter-spacing: 1px;
+    }
+.gold-input {
+    border-radius: 12px;
+    border: 1px solid rgba(212,175,55,0.35);
+    padding: 12px;
+    background: rgba(255,255,255,0.8);
+    transition: all 0.25s ease;
+}
+
+    .gold-input:focus {
+        border-color: #c5a059;
+        background: #fff;
+        box-shadow: 0 0 0 0.2rem rgba(197,160,89,0.2), 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+.gold-btn {
+    background: linear-gradient(135deg, #d8b27a, #b48a4a);
+    border: none;
+    color: white;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(180,138,74,0.3);
+}
+
+    .gold-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(180,138,74,0.4);
+        background: linear-gradient(135deg, #e2c48c, #c79b5a);
+    }
+.profile-card hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #d8b27a, transparent);
+    margin: 25px 0;
+}
+.profile-card label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8d6e63;
+    margin-bottom: 4px;
+}
+.profile-card:hover {
+    transform: translateY(-2px);
+    transition: 0.3s;
+}
+.sh-slot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.sh-slot {
+    display: inline-flex; 
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(212,175,55,0.5);
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+    .sh-slot:hover {
+        background: #f3ede7;
+        transform: translateY(-1px);
+    }
+    .sh-slot input:checked + * {
+        transform: scale(1.05);
+    }
+    .sh-slot.active {
+        background: linear-gradient(to right, #d8b27a, #b48a4a);
+        color: white;
+        border: none;
+    }
+.profile-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.profile-card {
+    width: 100%;
+    max-width: 500px;
+    background: linear-gradient(145deg, #fdfaf6, #f3ece4);
+    padding: 35px;
+    border-radius: 25px;
+    border: 1px solid rgba(212,175,55,0.25);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+    transition: 0.3s;
+}
+
+    .profile-card:hover {
+        transform: translateY(-2px);
+    }
+
+.profile-avatar {
+    width: 70px;
+    height: 70px;
+    margin: auto;
+    border-radius: 50%;
+    background: linear-gradient(to right, #d8b27a, #b48a4a);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.gold-input {
+    border-radius: 12px;
+    border: 1px solid rgba(212,175,55,0.35);
+    padding: 12px;
+    background: rgba(255,255,255,0.9);
+    transition: 0.25s;
+}
+
+    .gold-input:focus {
+        border-color: #c5a059;
+        background: #fff;
+        box-shadow: 0 0 0 0.2rem rgba(197,160,89,0.2), 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+.gold-btn {
+    background: linear-gradient(135deg, #d8b27a, #b48a4a);
+    border: none;
+    color: white;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: 0.3s;
+}
+
+    .gold-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(180,138,74,0.4);
+    }
+
+.password-title {
+    font-weight: 600;
+    color: #6d4c41;
+    margin-bottom: 10px;
+}
+
+.profile-card hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #d8b27a, transparent);
+    margin: 25px 0;
 }

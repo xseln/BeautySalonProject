@@ -2,34 +2,15 @@
 
 @{
     ViewData["Title"] = "Моят профил";
+    Layout = "~/Areas/Staff/Views/Shared/_StaffLayout.cshtml";
 }
 
-<div class="sh-page-hero text-center mb-4">
-    <div class="sh-slogan-wrap justify-content-center">
-        <span class="line"></span>
-        <span class="sh-slogan">SH Beauty Studio</span>
-        <span class="line"></span>
-    </div>
+<div class="container mt-5">
+    <div class="profile-card mx-auto">
 
-    <h1 class="sh-title">Моят профил</h1>
-</div>
+         <h3 class="text-center mb-4">✨ Моят профил</h3>
 
-<div class="profile-wrapper">
-
-    <div class="profile-card">
-
-        <div class="profile-header text-center">
-            <div class="profile-avatar">
-                @Model.FirstName?.FirstOrDefault()@Model.LastName?.FirstOrDefault()
-            </div>
-
-            <h4 class="mt-2">
-                @Model.FirstName @Model.LastName
-            </h4>
-
-        </div>
-
-        <form method="post" class="mt-4">
+        <form method="post">
 
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -55,10 +36,10 @@
 
             <hr />
 
-            <h6 class="password-title">Смяна на парола</h6>
+            <h5 class="mt-3">Смяна на парола</h5>
 
             <div class="mb-3">
-                <input asp-for="CurrentPassword" type="password" placeholder="Текуща парола" class="form-control gold-input" />
+                <input asp-for="CurrentPassword" type="password" placeholder="Стара парола" class="form-control gold-input" />
             </div>
 
             <div class="mb-3">
@@ -71,5 +52,4 @@
 
         </form>
     </div>
-
 </div>

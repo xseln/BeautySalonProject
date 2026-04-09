@@ -96,6 +96,7 @@ using (var scope = app.Services.CreateScope())
         await userManager.CreateAsync(user, adminPassword);
         await userManager.AddToRoleAsync(user, adminRole);
     }
+
 }
 
 app.Run();

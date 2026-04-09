@@ -12,5 +12,6 @@ namespace BeautySalonProject.Models
         [Required]
         [MaxLength(50)]
         public string LastName { get; set; } = "";
+        public string JobTitle { get; set; } = "";
     }
 }

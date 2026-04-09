@@ -8,16 +8,58 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
+@using Microsoft.AspNetCore.Identity
+@using BeautySalonProject.Models
+@using BeautySalonProject.Data
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext _context
 
+@{
+    var user = await UserManager.GetUserAsync(User);
+
+    var employee = _context.Employees
+        .FirstOrDefault(e => e.UserId == user.Id);
+}
+<body>
+@using System.Security.Claims
+
+    @{
+        var userName = User.Identity?.Name;
+    }
 <div class="d-flex" style="min-height:100vh;">
     <!-- Sidebar (като Admin) -->
     <aside class="admin-sidebar">
-        <div class="admin-brand">
-            Staff Panel<br />
-            <small>SH Beauty</small>
-        </div>
+<div class="admin-brand text-center">
+<div class="staff-user dropdown">
+    <div class="staff-bubble text-center" data-bs-toggle="dropdown">
 
+<div class="staff-name">
+                            @user?.Email
+</div>
+
+<div class="staff-role">
+    @user?.JobTitle
+</div>
+
+    </div>
+
+    <ul class="dropdown-menu text-center">
+        <li>
+            <a class="dropdown-item" asp-area="Staff" asp-controller="Profile" asp-action="Index">
+                Моят профил
+            </a>
+        </li>
+        <li>
+            <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                                @Html.AntiForgeryToken()
+                <button class="dropdown-item text-danger" type="submit">
+                    Изход
+                </button>
+            </form>
+        </li>
+    </ul>
+</div>
+</div>
         <div class="admin-nav">
             <a asp-area="Staff" asp-controller="Dashboard" asp-action="Index">
                 📊 Dashboard
