@@ -166,7 +166,7 @@
 
         </div>
 
-        <span class="sh-status sh-status-completed">
+                      <span class="sh-status @GetStatusClass(a.Status)">
                             @a.StatusText
         </span>
 
@@ -179,3 +179,16 @@
     }
 
 </div>
+@functions {
+    string GetStatusClass(byte status)
+    {
+        return status switch
+        {
+            0 => "sh-status-pending",
+            1 => "sh-status-booked",
+            2 => "sh-status-completed",
+            3 => "sh-status-cancelled",
+            _ => ""
+        };
+    }
+}

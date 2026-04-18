@@ -16,126 +16,85 @@
 
 <body>
    <header class="sh-topbar">
-
 <nav class="navbar navbar-expand-lg sh-navbar">
 
-<div class="container align-items-center">
+<div class="container align-items-center d-flex">
 
-<!-- LOGO -->
+    <!-- LOGO -->
+    <a class="navbar-brand d-flex align-items-center gap-2 sh-brand"
+       asp-controller="Home"
+       asp-action="Index">
 
-<a class="navbar-brand d-flex align-items-center gap-2 sh-brand"
-   asp-controller="Home"
-   asp-action="Index">
+        <img src="~/images/logo.png" class="sh-logo"/>
 
-<img src="~/images/logo.png" class="sh-logo"/>
+        <div class="sh-brand-text">
+            <span class="sh-brand-title">SH Beauty Studio</span>
 
-<div class="sh-brand-text">
+            <div class="sh-slogan-wrap">
+                <span class="line"></span>
+                <span class="sh-slogan">Chic & Unique</span>
+                <span class="line"></span>
+            </div>
+        </div>
+    </a>
 
-<span class="sh-brand-title">
-SH Beauty Studio
-</span>
+    <!-- MENU -->
+    <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav mx-auto gap-4 sh-nav">
 
-<div class="sh-slogan-wrap">
+            <li class="nav-item">
+                <a class="nav-link sh-nav-link" asp-controller="Home" asp-action="Index">Начало</a>
+            </li>
 
-<span class="line"></span>
+            <li class="nav-item">
+                <a class="nav-link sh-nav-link" asp-controller="Services" asp-action="Index">Услуги</a>
+            </li>
 
-<span class="sh-slogan">
-Chic & Unique
-</span>
+            <li class="nav-item">
+                <a class="nav-link sh-nav-link" asp-controller="Home" asp-action="About">За нас</a>
+            </li>
 
-<span class="line"></span>
+            <li class="nav-item">
+                <a class="nav-link sh-nav-link" asp-controller="Home" asp-action="Contacts">Контакти</a>
+            </li>
 
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                    <li class="nav-item">
+                        <a class="nav-link sh-nav-link" asp-controller="Inquiries" asp-action="Create">
+                            Запитване
+                        </a>
+                    </li>
+                        }
+                        else if (User.IsInRole("Client"))
+                        {
+                    <li class="nav-item">
+                        <a class="nav-link sh-nav-link" asp-area="Client" asp-controller="Appointments" asp-action="My">
+                            Моите часове
+                        </a>
+                    </li>
+                        }
+
+                        @if (User.IsInRole("Client"))
+                        {
+                    <li class="nav-item">
+                        <a class="nav-link sh-nav-link" asp-area="Client" asp-controller="Appointments" asp-action="Book">
+                            Запази час
+                        </a>
+                    </li>
+                        }
+
+        </ul>
+
+        <!-- LOGIN -->
+        <div class="sh-auth">
+            <partial name="_LoginPartial"/>
+        </div>
+    </div>
+    <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+<i class="fa-solid fa-bars" style="color:#2c2c2c; font-size:20px;"></i>    
+</button>
 </div>
-
-</div>
-
-</a>
-
-
-
-<!-- MENU -->
-
-<ul class="navbar-nav mx-auto gap-4 sh-nav">
-
-<li class="nav-item">
-<a class="nav-link sh-nav-link"
- asp-area=""
-   asp-controller="Home"
-   asp-action="Index">
-Начало
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link sh-nav-link"
-   asp-area=""
-   asp-controller="Services"
-   asp-action="Index">
-Услуги
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link sh-nav-link"
-   asp-area=""
-   asp-controller="Home"
-   asp-action="About">
-За нас
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link sh-nav-link"
-   asp-area=""
-   asp-controller="Home"
-   asp-action="Contacts">
-Контакти
-</a>
-</li>
-                    @if (!User.Identity.IsAuthenticated)
-                    {
-        <li class="nav-item">
-            <a class="nav-link sh-nav-link"
-               asp-controller="Inquiries"
-               asp-action="Create">
-                Запитване
-            </a>
-        </li>
-                    }
-                    else if (User.IsInRole("Client"))
-                    {
-        <li class="nav-item">
-            <a class="nav-link sh-nav-link"
-               asp-area="Client"
-               asp-controller="Appointments"
-               asp-action="My">
-                Моите часове
-            </a>
-        </li>
-                    }
-                    @if (User.IsInRole("Client"))
-                    {
-        <li class="nav-item">
-            <a class="nav-link sh-nav-link"
-               asp-area="Client"
-               asp-controller="Appointments"
-               asp-action="Book">
-                Запази час
-            </a>
-        </li>
-                    }
-</ul>
-
-
-
-<!-- LOGIN -->
-
-<div class="sh-auth">
-<partial name="_LoginPartial"/>
-</div>
-
-</div>
-
 </nav>
 
 </header>

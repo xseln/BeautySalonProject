@@ -6,12 +6,10 @@
 
     // ФУНКЦИЯ ЗА ЗАРЕЖДАНЕ НА ЧАСОВЕ
     window.loadAvailableSlots = async function () {
-        // Използваме ТЕЗИ конкретни ID-та от твоя HTML
         const empInput = document.getElementById("employeeSelectHidden");
         const varSelect = document.getElementById("variantSelect");
         const dateInp = document.getElementById("dateInput");
 
-        // ПРОВЕРКА ЗА ГРЕШКИ (Ако някой елемент липсва, няма да гърми)
         if (!empInput || !varSelect || !dateInp) {
             console.error("Критична грешка: Липсват елементи в HTML-а.");
             return;
@@ -21,7 +19,6 @@
         const varId = varSelect.value;
         const date = dateInp.value;
 
-        // Не правим нищо, ако липсва избор
         if (!empId || !varId || !date) {
             console.log("Изчаква се пълен избор (Специалист, Вариант и Дата).");
             return;
@@ -77,7 +74,6 @@
         }
     };
 
-    // Слушател за Вариант
     variantSelect?.addEventListener("change", function () {
         const selected = this.options[this.selectedIndex];
         if (this.value) {
@@ -88,7 +84,6 @@
         window.loadAvailableSlots();
     });
 
-    // Слушател за Дата
     dateInput?.addEventListener("change", function () {
         if (this.value) {
             if (document.getElementById("finalDate")) document.getElementById("finalDate").value = this.value;
@@ -100,7 +95,6 @@
         window.loadAvailableSlots();
     });
 
-    // --- ЛОГИКА ЗА КАТЕГОРИИ И УСЛУГИ (Опростена) ---
     document.getElementById("categorySelect")?.addEventListener("change", async function () {
         const svcSelect = document.getElementById("serviceSelect");
         if (!this.value || !svcSelect) return;
@@ -118,4 +112,5 @@
         varSelect.innerHTML = '<option value="">-- избери вариант --</option>';
         data.forEach(v => varSelect.innerHTML += `<option value="${v.variantId}" data-price="${v.price}">${v.variantName}</option>`);
     });
+
 });

@@ -2,9 +2,10 @@
 {
     public enum AppointmentStatus : byte
     {
-        Booked = 0,
-        Completed = 1,
-        Cancelled = 2
+          Pending = 0,     // Чака
+          Booked = 1,      // Потвърден
+          Completed = 2,   // Приключен
+          Cancelled = 3    // Отказан
     }
 }
 

@@ -98,7 +98,7 @@
                     <form asp-area="Admin" asp-controller="Appointments" asp-action="SetStatus" method="post">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@Model.AppointmentId" />
-                        <input type="hidden" name="status" value="2" />
+                        <input type="hidden" name="status" value="@((byte)AppointmentStatus.Completed)" />                       
                         <input type="hidden" name="date" value="@Model.StartAt.ToString("yyyy-MM-dd")" />
                         <button class="btn btn-primary" type="submit" @(Model.Status != 1 ? "disabled" : "")>
                             ✅ Приключи
@@ -108,7 +108,7 @@
                     <form asp-area="Admin" asp-controller="Appointments" asp-action="SetStatus" method="post">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@Model.AppointmentId" />
-                        <input type="hidden" name="status" value="3" />
+                        <input type="hidden" name="status" value="@((byte)AppointmentStatus.Cancelled)" />
                         <input type="hidden" name="date" value="@Model.StartAt.ToString("yyyy-MM-dd")" />
                         <button class="btn btn-danger" type="submit" @(Model.Status == 2 ? "disabled" : "")>
                             ❌ Откажи

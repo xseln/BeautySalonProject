@@ -85,7 +85,7 @@
                 ⬅️ Към сайта
             </a>
 
-            <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+            <form asp-area="" asp-controller="Home" asp-action="Index">
                     @Html.AntiForgeryToken()
              <button class="btn btn-outline-light w-100" type="submit">Изход</button>
            </form>

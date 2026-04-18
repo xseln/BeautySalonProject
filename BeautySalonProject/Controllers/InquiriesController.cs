@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using BeautySalonProject.Models;
 using BeautySalonProject.ViewModels;
-using BeautySalonProject.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BeautySalonProject.Data;
@@ -14,14 +13,9 @@ namespace BeautySalonProject.Controllers
     public class InquiriesController : Controller
     {
         private readonly ApplicationDbContext _db;
-        private readonly IEmailSender _email;
-        private readonly EmailSettings _settings;
-
-        public InquiriesController(ApplicationDbContext db, IEmailSender email, IOptions<EmailSettings> settings)
+        public InquiriesController(ApplicationDbContext db)
         {
             _db = db;
-            _email = email;
-            _settings = settings.Value;
         }
 
         [HttpGet]
@@ -105,11 +99,6 @@ namespace BeautySalonProject.Controllers
                 <p><b>Бележка:</b> {System.Net.WebUtility.HtmlEncode(vm.Note ?? "-")}</p>
                 <hr/>
                 <p><i>SH Beauty Salon</i></p>";
-
-            await _email.SendAsync(_settings.AdminEmail, subject, body);
-
-            if (!string.IsNullOrWhiteSpace(employeeEmail))
-                await _email.SendAsync(employeeEmail, subject, body);
 
             TempData["Ok"] = $"Запитването е изпратено успешно! Ще се свържем с вас скоро.";
             return RedirectToAction(nameof(Create));

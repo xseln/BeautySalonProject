@@ -16,11 +16,12 @@ namespace BeautySalonProject.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public AppointmentsController(ApplicationDbContext db, UserManager<ApplicationUser> userManager)
+        private readonly EmailService _emailService;
+        public AppointmentsController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, EmailService emailService)
         {
             _db = db;
             _userManager = userManager;
+            _emailService = emailService;
         }
 
         public async Task<IActionResult> Index(DateTime? date, byte? status, int? employeeId)
@@ -172,6 +173,65 @@ namespace BeautySalonProject.Areas.Admin.Controllers
             a.Status = status;
             a.UpdatedAt = DateTime.Now;
             await _db.SaveChangesAsync();
+
+            if (!string.IsNullOrEmpty(a.GuestEmail))
+            {
+                string subject = "";
+                string body = "";
+
+                if (status == 1)
+                {
+                    subject = "Потвърден час";
+                }
+                else if (status == 3)
+                {
+                    subject = "Отменен час";
+                }
+
+                if (!string.IsNullOrEmpty(subject))
+                {
+                    body = $@"
+    <div style='font-family: Poppins, sans-serif; background:#f8f5f0; padding:40px;'>
+        
+        <div style='max-width:600px; margin:auto; background:#ffffff; border-radius:15px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.1);'>
+            
+            <div style='background: linear-gradient(to right, #d4af37, #b8962e); padding:30px; text-align:center; color:white;'>
+                <h1 style='margin:0;'>SH Beauty Studio</h1>
+                <div>Chic & Unique</div>
+            </div>
+
+            <div style='padding:30px; text-align:center; color:#4a3728;'>
+
+                <h2>
+                    {(status == 1 ? "Вашият час е потвърден ✅" : "Вашият час е отменен ❌")}
+                </h2>
+
+                <p>
+                    {(status == 1
+                                        ? "Очакваме Ви с удоволствие в нашия салон!"
+                                        : "Съжаляваме, но вашият час беше отменен.")}
+                </p>
+
+                <div style='background:#f9f6f2; padding:20px; border-radius:10px;'>
+
+                    <p><strong>📅 Дата:</strong> {a.StartAt:dd.MM.yyyy}</p>
+                    <p><strong>⏰ Час:</strong> {a.StartAt:HH:mm}</p>
+
+                </div>
+
+            </div>
+
+            <div style='background:#4a3728; color:white; text-align:center; padding:20px;'>
+                SH Beauty Studio • София
+            </div>
+
+        </div>
+
+    </div>";
+
+                    await _emailService.SendEmailAsync(a.GuestEmail, subject, body);
+                }
+            }
 
             TempData["Ok"] = "Статусът е обновен.";
             return RedirectToAction(nameof(Index), new { date = (date ?? a.StartAt).Date });

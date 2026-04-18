@@ -221,7 +221,6 @@ namespace BeautySalonProject.Areas.Client.Controllers
 
 		private ClientAppointmentRowVm MapToRow(Appointment a)
 		{
-			// Прозорец от 2 часа след създаването
 			var canEditOrCancel = (DateTime.Now - a.CreatedAt).TotalHours <= 2;
 
 			return new ClientAppointmentRowVm
@@ -234,10 +233,15 @@ namespace BeautySalonProject.Areas.Client.Controllers
 				EmployeeName = a.Employee.FirstName + " " + a.Employee.LastName,
 				FinalPrice = a.FinalPrice,
 				Status = a.Status,
-				StatusText = a.Status == 1 ? "Резервиран" : (a.Status == 3 ? "Отменен" : "Завършен"),
-
-				// Това свойство ще управлява видимостта на бутоните
-				CanCancel = canEditOrCancel && a.Status != 3
+                StatusText = a.Status switch
+                {
+                    0 => "Чака",
+                    1 => "Запазен",
+                    2 => "Приключен",
+                    3 => "Отменен",
+                    _ => "—"
+                },
+                CanCancel = canEditOrCancel && a.Status != 3
 			};
 		}
 
@@ -247,7 +251,6 @@ namespace BeautySalonProject.Areas.Client.Controllers
 			var appointment = await _db.Appointments.FindAsync(id);
 			if (appointment == null) return NotFound();
 
-			// ПРОВЕРКА ЗА СИГУРНОСТ:
 			var hoursSinceCreation = (DateTime.Now - appointment.CreatedAt).TotalHours;
 
 			if (hoursSinceCreation > 2)
@@ -256,14 +259,13 @@ namespace BeautySalonProject.Areas.Client.Controllers
 				return RedirectToAction(nameof(My));
 			}
 
-			appointment.Status = 3; // Отменен
+			appointment.Status = 3;
 			await _db.SaveChangesAsync();
 
 			TempData["Ok"] = "Резервацията е отменена успешно.";
 			return RedirectToAction(nameof(My));
 		}
 
-        // 1. Зареждане на формата за редакция
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -273,7 +275,6 @@ namespace BeautySalonProject.Areas.Client.Controllers
 
             if (appointment == null) return NotFound();
 
-            // Проверка на 2-часовия прозорец
             var hoursSinceCreation = (DateTime.Now - appointment.CreatedAt).TotalHours;
             if (hoursSinceCreation > 2)
             {
@@ -281,14 +282,12 @@ namespace BeautySalonProject.Areas.Client.Controllers
                 return RedirectToAction(nameof(My));
             }
 
-            // Подготовка на ViewModel-а
             var vm = new EditAppointmentVm
             {
                 AppointmentId = appointment.AppointmentId,
                 EmployeeId = appointment.EmployeeId,
                 VariantId = appointment.VariantId,
                 Date = DateOnly.FromDateTime(appointment.StartAt),
-                // Вземаме всички активни служители за избор
                 Employees = await _db.Employees
                     .Where(e => e.IsActive)
                     .Select(e => new EditAppointmentVm.EmployeeOption
@@ -301,28 +300,22 @@ namespace BeautySalonProject.Areas.Client.Controllers
             return View(vm);
         }
 
-        // 2. Записване на промените
         [HttpPost]
         public async Task<IActionResult> Edit(int id, int employeeId, DateOnly date, TimeOnly slot)
         {
             var appointment = await _db.Appointments.FindAsync(id);
             if (appointment == null) return NotFound();
 
-            // Повторна проверка за сигурност на сървъра
             if ((DateTime.Now - appointment.CreatedAt).TotalHours > 2)
             {
                 TempData["Err"] = "Грешка: Времето за редакция е изтекло.";
                 return RedirectToAction(nameof(My));
             }
 
-            // Изчисляваме новите начален и краен час
-            // Тук приемаме, че времетраенето остава същото (от оригиналния запис)
             var duration = appointment.EndAt - appointment.StartAt;
 
             DateTime newStart = date.ToDateTime(slot);
             DateTime newEnd = newStart.Add(duration);
-
-            // TODO: Тук е добре да добавиш проверка дали новият слот не е зает междувременно!
 
             appointment.EmployeeId = employeeId;
             appointment.StartAt = newStart;

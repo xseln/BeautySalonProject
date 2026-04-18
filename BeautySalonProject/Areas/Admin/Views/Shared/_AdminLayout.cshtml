@@ -43,9 +43,11 @@
 
     <hr />
 
-   <a asp-area="" asp-controller="Home" asp-action="Index">
-    ⬅️ Към сайта
-</a>
+    <form asp-area="" asp-controller="Home" asp-action="Index">
+                    @Html.AntiForgeryToken()
+             <button class="btn btn-outline-light w-100" type="submit">Изход</button>
+           </form>
+
 </nav>
 
     </aside>
